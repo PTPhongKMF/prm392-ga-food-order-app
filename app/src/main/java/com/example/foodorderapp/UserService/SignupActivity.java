@@ -1,4 +1,4 @@
-package com.example.foodorderapp;
+package com.example.foodorderapp.UserService;
 
 import android.content.Intent;
 import android.os.Bundle;
