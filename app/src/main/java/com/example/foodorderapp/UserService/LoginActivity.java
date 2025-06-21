@@ -1,4 +1,4 @@
-package com.example.foodorderapp;
+package com.example.foodorderapp.UserService;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,13 +7,16 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.foodorderapp.MainActivity;
 import com.example.foodorderapp.database.DatabaseHelper;
 import com.example.foodorderapp.databinding.ActivityLoginBinding;
 import com.example.foodorderapp.model.User;
+import com.example.foodorderapp.utils.SessionManager;
 
 public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private DatabaseHelper dbHelper;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +25,14 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         dbHelper = new DatabaseHelper(this);
+        sessionManager = SessionManager.getInstance(this);
         setupClickListeners();
+        
+        // Check if user is already logged in
+        if (sessionManager.isLoggedIn()) {
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+        }
     }
 
     private void setupClickListeners() {
@@ -45,13 +55,16 @@ public class LoginActivity extends AppCompatActivity {
         
         User user = dbHelper.getUserByEmail(email);
         if (user != null && password.equals(user.getPassword())) {
+            // Save user session
+            sessionManager.saveUser(user);
+            
             // Login successful
-            Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
         } else {
             binding.loginButton.setEnabled(true);
-            Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -59,18 +72,18 @@ public class LoginActivity extends AppCompatActivity {
         boolean valid = true;
 
         if (TextUtils.isEmpty(email)) {
-            binding.emailEditText.setError("Required");
+            binding.emailEditText.setError("Bắt buộc");
             valid = false;
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            binding.emailEditText.setError("Invalid email address");
+            binding.emailEditText.setError("Email không hợp lệ");
             valid = false;
         }
 
         if (TextUtils.isEmpty(password)) {
-            binding.passwordEditText.setError("Required");
+            binding.passwordEditText.setError("Bắt buộc");
             valid = false;
         } else if (password.length() < 6) {
-            binding.passwordEditText.setError("Password too short");
+            binding.passwordEditText.setError("Mật khẩu quá ngắn");
             valid = false;
         }
 
