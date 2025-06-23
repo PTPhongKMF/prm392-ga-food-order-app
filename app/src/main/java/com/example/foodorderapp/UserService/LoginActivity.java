@@ -1,4 +1,4 @@
-package com.example.foodorderapp.UserActivities;
+package com.example.foodorderapp.UserService;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,9 +8,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.foodorderapp.MainActivity;
-import com.example.foodorderapp.Database.DatabaseHelper;
+import com.example.foodorderapp.database.DatabaseHelper;
 import com.example.foodorderapp.databinding.ActivityLoginBinding;
-import com.example.foodorderapp.Models.User;
+import com.example.foodorderapp.model.User;
 import com.example.foodorderapp.utils.SessionManager;
 
 public class LoginActivity extends AppCompatActivity {
