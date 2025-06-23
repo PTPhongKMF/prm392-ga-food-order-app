@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.example.foodorderapp.UserService.LoginActivity;
-import com.example.foodorderapp.UserService.UserProfileActivity;
+import com.example.foodorderapp.UserActivities.LoginActivity;
+import com.example.foodorderapp.UserActivities.UserProfileActivity;
 import com.example.foodorderapp.utils.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 

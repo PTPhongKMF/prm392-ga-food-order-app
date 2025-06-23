@@ -3,8 +3,7 @@ package com.example.foodorderapp.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.example.foodorderapp.model.User;
-import com.example.foodorderapp.model.UserRole;
+import com.example.foodorderapp.Models.User;
 import com.google.gson.Gson;
 
 public class SessionManager {

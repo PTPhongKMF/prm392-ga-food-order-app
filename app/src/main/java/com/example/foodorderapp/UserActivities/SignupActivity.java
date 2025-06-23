@@ -1,4 +1,4 @@
-package com.example.foodorderapp.UserService;
+package com.example.foodorderapp.UserActivities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,10 +7,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.foodorderapp.database.DatabaseHelper;
+import com.example.foodorderapp.Database.DatabaseHelper;
 import com.example.foodorderapp.databinding.ActivitySignupBinding;
-import com.example.foodorderapp.model.User;
-import com.example.foodorderapp.model.UserRole;
+import com.example.foodorderapp.Models.User;
+import com.example.foodorderapp.Models.UserRole;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.example.foodorderapp.model;
+package com.example.foodorderapp.Models;
 
 public enum UserRole {
     GUEST,
