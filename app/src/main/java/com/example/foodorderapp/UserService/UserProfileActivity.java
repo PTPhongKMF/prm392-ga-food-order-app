@@ -1,4 +1,4 @@
-package com.example.foodorderapp.UserActivities;
+package com.example.foodorderapp.UserService;
 
 import android.os.Bundle;
 import android.widget.Button;
@@ -8,8 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.example.foodorderapp.R;
-import com.example.foodorderapp.Database.DatabaseHelper;
-import com.example.foodorderapp.Models.User;
+import com.example.foodorderapp.database.DatabaseHelper;
+import com.example.foodorderapp.model.User;
 import com.example.foodorderapp.utils.SessionManager;
 import com.google.android.material.textfield.TextInputEditText;
 
