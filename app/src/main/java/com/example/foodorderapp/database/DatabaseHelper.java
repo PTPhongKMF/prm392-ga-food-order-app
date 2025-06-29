@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
+    private static final String TAG = "DatabaseHelper";
     private static final String DATABASE_NAME = "FoodOrderApp.db";
     private static final int DATABASE_VERSION = 1;
 
@@ -48,6 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + COLUMN_CREATED_AT + " TEXT"
                 + ")";
         db.execSQL(CREATE_USERS_TABLE);
+        Log.d(TAG, "Created users table: " + CREATE_USERS_TABLE);
     }
 
     @Override
@@ -58,64 +61,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Create User
     public long createUser(User user) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        
-        values.put(COLUMN_NAME, user.getName());
-        values.put(COLUMN_EMAIL, user.getEmail());
-        values.put(COLUMN_PASSWORD, user.getPassword());
-        values.put(COLUMN_ROLE, user.getRole().toString());
-        values.put(COLUMN_PHONE, user.getPhone());
-        values.put(COLUMN_ADDRESS, user.getAddress());
-        values.put(COLUMN_AVATAR_URL, user.getAvatarUrl());
-        values.put(COLUMN_CREATED_AT, user.getCreatedAt());
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            
+            values.put(COLUMN_NAME, user.getName());
+            values.put(COLUMN_EMAIL, user.getEmail());
+            values.put(COLUMN_PASSWORD, user.getPassword());
+            values.put(COLUMN_ROLE, user.getRole().toString());
+            values.put(COLUMN_PHONE, user.getPhone());
+            values.put(COLUMN_ADDRESS, user.getAddress());
+            values.put(COLUMN_AVATAR_URL, user.getAvatarUrl());
+            values.put(COLUMN_CREATED_AT, user.getCreatedAt());
 
-        long id = db.insert(TABLE_USERS, null, values);
-        db.close();
-        return id;
+            long id = db.insert(TABLE_USERS, null, values);
+            db.close();
+            return id;
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating user: " + e.getMessage());
+            return -1;
+        }
     }
 
     // Get User by Email
     public User getUserByEmail(String email) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        
-        Cursor cursor = db.query(TABLE_USERS,
-                new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_EMAIL, COLUMN_PASSWORD,
-                        COLUMN_ROLE, COLUMN_PHONE, COLUMN_ADDRESS, COLUMN_AVATAR_URL,
-                        COLUMN_CREATED_AT},
-                COLUMN_EMAIL + "=?",
-                new String[]{email},
-                null, null, null);
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+            
+            Cursor cursor = db.query(TABLE_USERS,
+                    new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_EMAIL, COLUMN_PASSWORD,
+                            COLUMN_ROLE, COLUMN_PHONE, COLUMN_ADDRESS, COLUMN_AVATAR_URL,
+                            COLUMN_CREATED_AT},
+                    COLUMN_EMAIL + "=?",
+                    new String[]{email},
+                    null, null, null);
 
-        User user = null;
-        if (cursor != null && cursor.moveToFirst()) {
-            user = new User();
-            user.setId(cursor.getString(0));
-            user.setName(cursor.getString(1));
-            user.setEmail(cursor.getString(2));
-            user.setPassword(cursor.getString(3));
-            user.setRole(UserRole.valueOf(cursor.getString(4)));
-            user.setPhone(cursor.getString(5));
-            user.setAddress(cursor.getString(6));
-            user.setAvatarUrl(cursor.getString(7));
-            user.setCreatedAt(cursor.getString(8));
-            cursor.close();
-        }
-        db.close();
-        return user;
-    }
-
-    // Get All Users
-    public List<User> getAllUsers() {
-        List<User> users = new ArrayList<>();
-        String selectQuery = "SELECT * FROM " + TABLE_USERS;
-
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-                User user = new User();
+            User user = null;
+            if (cursor != null && cursor.moveToFirst()) {
+                user = new User();
                 user.setId(cursor.getString(0));
                 user.setName(cursor.getString(1));
                 user.setEmail(cursor.getString(2));
@@ -125,39 +108,82 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 user.setAddress(cursor.getString(6));
                 user.setAvatarUrl(cursor.getString(7));
                 user.setCreatedAt(cursor.getString(8));
-                users.add(user);
-            } while (cursor.moveToNext());
+                cursor.close();
+            }
+            db.close();
+            return user;
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting user by email: " + e.getMessage());
+            return null;
         }
-        cursor.close();
-        db.close();
+    }
+
+    // Get All Users
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
+        try {
+            String selectQuery = "SELECT * FROM " + TABLE_USERS;
+
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor = db.rawQuery(selectQuery, null);
+
+            if (cursor.moveToFirst()) {
+                do {
+                    User user = new User();
+                    user.setId(cursor.getString(0));
+                    user.setName(cursor.getString(1));
+                    user.setEmail(cursor.getString(2));
+                    user.setPassword(cursor.getString(3));
+                    user.setRole(UserRole.valueOf(cursor.getString(4)));
+                    user.setPhone(cursor.getString(5));
+                    user.setAddress(cursor.getString(6));
+                    user.setAvatarUrl(cursor.getString(7));
+                    user.setCreatedAt(cursor.getString(8));
+                    users.add(user);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+            db.close();
+        } catch (Exception e) {
+            Log.e(TAG, "Error getting all users: " + e.getMessage());
+        }
         return users;
     }
 
     // Update User
     public int updateUser(User user) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues values = new ContentValues();
 
-        values.put(COLUMN_NAME, user.getName());
-        values.put(COLUMN_EMAIL, user.getEmail());
-        values.put(COLUMN_PASSWORD, user.getPassword());
-        values.put(COLUMN_ROLE, user.getRole().toString());
-        values.put(COLUMN_PHONE, user.getPhone());
-        values.put(COLUMN_ADDRESS, user.getAddress());
-        values.put(COLUMN_AVATAR_URL, user.getAvatarUrl());
-        values.put(COLUMN_CREATED_AT, user.getCreatedAt());
+            values.put(COLUMN_NAME, user.getName());
+            values.put(COLUMN_EMAIL, user.getEmail());
+            values.put(COLUMN_PASSWORD, user.getPassword());
+            values.put(COLUMN_ROLE, user.getRole().toString());
+            values.put(COLUMN_PHONE, user.getPhone());
+            values.put(COLUMN_ADDRESS, user.getAddress());
+            values.put(COLUMN_AVATAR_URL, user.getAvatarUrl());
+            values.put(COLUMN_CREATED_AT, user.getCreatedAt());
 
-        int rowsAffected = db.update(TABLE_USERS, values,
-                COLUMN_ID + "=?",
-                new String[]{user.getId()});
-        db.close();
-        return rowsAffected;
+            int rowsAffected = db.update(TABLE_USERS, values,
+                    COLUMN_ID + "=?",
+                    new String[]{user.getId()});
+            db.close();
+            return rowsAffected;
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating user: " + e.getMessage());
+            return 0;
+        }
     }
 
     // Delete User
     public void deleteUser(String userId) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_USERS, COLUMN_ID + "=?", new String[]{userId});
-        db.close();
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            db.delete(TABLE_USERS, COLUMN_ID + "=?", new String[]{userId});
+            db.close();
+        } catch (Exception e) {
+            Log.e(TAG, "Error deleting user: " + e.getMessage());
+        }
     }
 } 

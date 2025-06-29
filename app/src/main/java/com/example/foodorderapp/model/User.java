@@ -1,5 +1,6 @@
 package com.example.foodorderapp.model;
 
+import androidx.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
 
 public class User {
@@ -30,6 +31,10 @@ public class User {
     @SerializedName("createdAt")
     private String createdAt;
 
+    public User() {
+        // Default constructor
+    }
+
     // Getters and Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
@@ -57,4 +62,17 @@ public class User {
 
     public String getCreatedAt() { return createdAt; }
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", role=" + role +
+                ", phone='" + phone + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 } 
