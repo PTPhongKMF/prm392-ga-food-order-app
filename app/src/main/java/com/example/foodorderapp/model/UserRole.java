@@ -4,5 +4,10 @@ public enum UserRole {
     GUEST,
     CUSTOMER,
     STAFF,
-    SELLER
+    SELLER;
+
+    @Override
+    public String toString() {
+        return name();
+    }
 } 
