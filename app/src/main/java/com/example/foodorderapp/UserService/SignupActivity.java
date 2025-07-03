@@ -98,10 +98,11 @@ public class SignupActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(password)) {
             binding.passwordEditText.setError("Required");
             valid = false;
-        } else if (password.length() < 6) {
-            binding.passwordEditText.setError("Password too short");
-            valid = false;
         }
+//        else if (password.length() < 6) {
+//            binding.passwordEditText.setError("Password too short");
+//            valid = false;
+//        }
 
         if (TextUtils.isEmpty(phone)) {
             binding.phoneEditText.setError("Required");
