@@ -22,77 +22,53 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseHelper extends BaseDatabaseHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
     private static final String DATABASE_NAME = "FoodOrderApp.db";
     private static final int DATABASE_VERSION = 4;
-    private final Context context;  // 👈 Thêm dòng này
+    private final Context context;
     private final UserDatabaseHelper userHelper;
     private final CategoryDatabaseHelper categoryHelper;
     private final FoodDatabaseHelper foodHelper;
 
-    // Table Users
-    private static final String TABLE_USERS = "users";
-    private static final String COLUMN_ID = "id";
-    private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_EMAIL = "email";
-    private static final String COLUMN_PASSWORD = "password";
-    private static final String COLUMN_ROLE = "role";
-    private static final String COLUMN_PHONE = "phone";
-    private static final String COLUMN_ADDRESS = "address";
-    private static final String COLUMN_AVATAR_URL = "avatar_url";
-    private static final String COLUMN_CREATED_AT = "created_at";
-
-    // Category Table
-    private static final String TABLE_CATEGORY = "category";
-    private static final String CATEGORY_ID = "id";
-    private static final String CATEGORY_IMAGE_PATH = "image_path";
-    private static final String CATEGORY_NAME = "name";
-
-    // Product Table
-    private static final String TABLE_PRODUCT = "product";
-    private static final String PRODUCT_ID = "id";
-    private static final String PRODUCT_CATEGORY_ID = "category_id";
-    private static final String PRODUCT_BEST_FOOD = "best_food";
-    private static final String PRODUCT_TITLE = "title";
-    private static final String PRODUCT_DESCRIPTION = "description";
-    private static final String PRODUCT_IMAGE_PATH = "image_path";
-    private static final String PRODUCT_LOCATION_ID = "location_id";
-    private static final String PRODUCT_PRICE = "price";
-    private static final String PRODUCT_PRICE_ID = "price_id";
-    private static final String PRODUCT_STAR = "star";
-    private static final String PRODUCT_TIME_ID = "time_id";
-    private static final String PRODUCT_TIME_VALUE = "time_value";
-
     public DatabaseHelper(@Nullable Context context) {
-        super(context);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
-        userHelper = new UserDatabaseHelper(context);
-        categoryHelper = new CategoryDatabaseHelper(context);
-        foodHelper = new FoodDatabaseHelper(context);
+        userHelper = new UserDatabaseHelper(context, this);
+        categoryHelper = new CategoryDatabaseHelper(context, this);
+        foodHelper = new FoodDatabaseHelper(context, this);
     }
 
     @Override
+    public void onCreate(SQLiteDatabase db) {
+        createTables(db);
+        initializeData(db);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        dropTables(db);
+        onCreate(db);
+    }
+
     protected void createTables(SQLiteDatabase db) {
         userHelper.createTables(db);
         categoryHelper.createTables(db);
         foodHelper.createTables(db);
     }
 
-    @Override
     protected void dropTables(SQLiteDatabase db) {
         foodHelper.dropTables(db);  // Drop in reverse order due to foreign key constraints
         categoryHelper.dropTables(db);
         userHelper.dropTables(db);
     }
 
-    @Override
     protected void initializeData(SQLiteDatabase db) {
         categoryHelper.initializeData(db);
         foodHelper.initializeData(db);
     }
 
-    private void executeSqlFromAsset(SQLiteDatabase db, Context context, String fileName) {
+    protected void executeSqlFromAsset(SQLiteDatabase db, String fileName) {
         try {
             InputStream input = context.getAssets().open(fileName);
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -172,4 +148,13 @@ public class DatabaseHelper extends BaseDatabaseHelper {
     public void deleteUser(String userId) {
         userHelper.deleteUser(userId);
     }
-} 
+
+    // Getter for database
+    public SQLiteDatabase getWritableDb() {
+        return this.getWritableDatabase();
+    }
+
+    public SQLiteDatabase getReadableDb() {
+        return this.getReadableDatabase();
+    }
+}
