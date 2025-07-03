@@ -82,10 +82,11 @@ public class LoginActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(password)) {
             binding.passwordEditText.setError("Bắt buộc");
             valid = false;
-        } else if (password.length() < 6) {
-            binding.passwordEditText.setError("Mật khẩu quá ngắn");
-            valid = false;
         }
+//        else if (password.length() < 6) {
+//            binding.passwordEditText.setError("Mật khẩu quá ngắn");
+//            valid = false;
+//        }
 
         return valid;
     }
