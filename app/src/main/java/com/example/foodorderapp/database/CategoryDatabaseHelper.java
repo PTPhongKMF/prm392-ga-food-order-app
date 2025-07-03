@@ -12,7 +12,7 @@ import com.example.foodorderapp.model.Category;
 
 import java.util.ArrayList;
 
-public class CategoryDatabaseHelper extends BaseDatabaseHelper {
+public class CategoryDatabaseHelper {
     private static final String TAG = "CategoryDatabaseHelper";
 
     // Category Table
@@ -21,11 +21,14 @@ public class CategoryDatabaseHelper extends BaseDatabaseHelper {
     private static final String CATEGORY_IMAGE_PATH = "image_path";
     private static final String CATEGORY_NAME = "name";
 
-    public CategoryDatabaseHelper(@Nullable Context context) {
-        super(context);
+    private final Context context;
+    private final DatabaseHelper dbHelper;
+
+    public CategoryDatabaseHelper(@Nullable Context context, DatabaseHelper dbHelper) {
+        this.context = context;
+        this.dbHelper = dbHelper;
     }
 
-    @Override
     protected void createTables(SQLiteDatabase db) {
         String CREATE_CATEGORY_TABLE = "CREATE TABLE " + TABLE_CATEGORY + "("
                 + CATEGORY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -35,12 +38,10 @@ public class CategoryDatabaseHelper extends BaseDatabaseHelper {
         db.execSQL(CREATE_CATEGORY_TABLE);
     }
 
-    @Override
     protected void dropTables(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATEGORY);
     }
 
-    @Override
     protected void initializeData(SQLiteDatabase db) {
         insertDefaultCategories(db);
     }
@@ -75,7 +76,7 @@ public class CategoryDatabaseHelper extends BaseDatabaseHelper {
 
     public ArrayList<Category> getAllCategories() {
         ArrayList<Category> list = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = dbHelper.getReadableDb();
 
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_CATEGORY, null);
         if (cursor.moveToFirst()) {

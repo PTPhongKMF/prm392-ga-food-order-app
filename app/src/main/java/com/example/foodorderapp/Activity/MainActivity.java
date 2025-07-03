@@ -57,8 +57,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // Set up bottom navigation
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
-        // Set up user menu click listener
-        btnUserMenu.setOnClickListener(v -> showUserMenu());
+        // Set up user menu click listener with debug Toast
+        btnUserMenu.setOnClickListener(v -> {
+            Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
+            showUserMenu();
+        });
+
+        // Make sure button is clickable and visible
+        btnUserMenu.setClickable(true);
+        btnUserMenu.setEnabled(true);
+        btnUserMenu.setVisibility(View.VISIBLE);
 
         recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.progressBarCategory);
@@ -66,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         dbHelper = new DatabaseHelper(this);
         loadCategories();
-
     }
 
     private void loadCategories() {
@@ -74,19 +81,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         progressBar.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
 
+        categoryList = dbHelper.getAllCategories();
 
-            categoryList = dbHelper.getAllCategories();
+        adapter = new CategoryAdapter(categoryList);
+        recyclerView.setAdapter(adapter);
 
-            adapter = new CategoryAdapter(categoryList);
-            recyclerView.setAdapter(adapter);
-
-            progressBar.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-
+        progressBar.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
     }
 
     //User Menu options
     private void showUserMenu() {
+        // Debug Toast
+        Toast.makeText(this, "Showing menu", Toast.LENGTH_SHORT).show();
+
         if (!isUserLoggedIn()) {
             // Show login dialog
             new androidx.appcompat.app.AlertDialog.Builder(this)
@@ -101,34 +109,41 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             return;
         }
 
-        PopupMenu popup = new PopupMenu(this, btnUserMenu);
-        popup.getMenuInflater().inflate(R.menu.user_menu, popup.getMenu());
+        try {
+            PopupMenu popup = new PopupMenu(MainActivity.this, btnUserMenu);
+            popup.getMenuInflater().inflate(R.menu.user_menu, popup.getMenu());
 
-        popup.setOnMenuItemClickListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.action_profile) {
-                startActivity(new Intent(this, UserProfileActivity.class));
-                return true;
-            } else if (itemId == R.id.action_orders) {
-                // TODO: Navigate to orders
-                Toast.makeText(this, "Đơn hàng của tôi", Toast.LENGTH_SHORT).show();
-                return true;
-            } else if (itemId == R.id.action_settings) {
-                // TODO: Navigate to settings
-                Toast.makeText(this, "Cài đặt", Toast.LENGTH_SHORT).show();
-                return true;
-            } else if (itemId == R.id.action_logout) {
-                logout();
-                return true;
-            }
-            return false;
-        });
+            popup.setOnMenuItemClickListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.action_profile) {
+                    startActivity(new Intent(this, UserProfileActivity.class));
+                    return true;
+                } else if (itemId == R.id.action_orders) {
+                    Toast.makeText(this, "Đơn hàng của tôi", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else if (itemId == R.id.action_settings) {
+                    Toast.makeText(this, "Cài đặt", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else if (itemId == R.id.action_logout) {
+                    logout();
+                    return true;
+                }
+                return false;
+            });
 
-        popup.show();
+            popup.show();
+        } catch (Exception e) {
+            // Debug any potential errors
+            Toast.makeText(this, "Error showing menu: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 
     private boolean isUserLoggedIn() {
-        return sessionManager.isLoggedIn();
+        boolean logged = sessionManager.isLoggedIn();
+        // Debug Toast
+        Toast.makeText(this, "User logged in: " + logged, Toast.LENGTH_SHORT).show();
+        return logged;
     }
 
     private void logout() {
@@ -145,11 +160,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.navigation_home) {
-            // TODO: Navigate to home
             Toast.makeText(this, "Trang chủ", Toast.LENGTH_SHORT).show();
             return true;
         } else if (itemId == R.id.navigation_menu) {
-            // TODO: Navigate to menu
             Toast.makeText(this, "Thực đơn", Toast.LENGTH_SHORT).show();
             return true;
         } else if (itemId == R.id.navigation_cart) {
@@ -165,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     .show();
                 return false;
             }
-            // TODO: Navigate to cart
             Toast.makeText(this, "Giỏ hàng", Toast.LENGTH_SHORT).show();
             return true;
         }

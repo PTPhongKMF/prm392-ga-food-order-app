@@ -14,7 +14,7 @@ import com.example.foodorderapp.model.UserRole;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserDatabaseHelper extends BaseDatabaseHelper {
+public class UserDatabaseHelper {
     private static final String TAG = "UserDatabaseHelper";
 
     // Table Users
@@ -29,11 +29,14 @@ public class UserDatabaseHelper extends BaseDatabaseHelper {
     private static final String COLUMN_AVATAR_URL = "avatar_url";
     private static final String COLUMN_CREATED_AT = "created_at";
 
-    public UserDatabaseHelper(@Nullable Context context) {
-        super(context);
+    private final Context context;
+    private final DatabaseHelper dbHelper;
+
+    public UserDatabaseHelper(@Nullable Context context, DatabaseHelper dbHelper) {
+        this.context = context;
+        this.dbHelper = dbHelper;
     }
 
-    @Override
     protected void createTables(SQLiteDatabase db) {
         String CREATE_USERS_TABLE = "CREATE TABLE " + TABLE_USERS + "("
                 + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -50,7 +53,6 @@ public class UserDatabaseHelper extends BaseDatabaseHelper {
         Log.d(TAG, "Created users table: " + CREATE_USERS_TABLE);
     }
 
-    @Override
     protected void dropTables(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
     }
@@ -58,7 +60,7 @@ public class UserDatabaseHelper extends BaseDatabaseHelper {
     // Create User
     public long createUser(User user) {
         try {
-            SQLiteDatabase db = this.getWritableDatabase();
+            SQLiteDatabase db = dbHelper.getWritableDb();
             ContentValues values = new ContentValues();
             
             values.put(COLUMN_NAME, user.getName());
@@ -82,7 +84,7 @@ public class UserDatabaseHelper extends BaseDatabaseHelper {
     // Get User by Email
     public User getUserByEmail(String email) {
         try {
-            SQLiteDatabase db = this.getReadableDatabase();
+            SQLiteDatabase db = dbHelper.getReadableDb();
             
             Cursor cursor = db.query(TABLE_USERS,
                     new String[]{COLUMN_ID, COLUMN_NAME, COLUMN_EMAIL, COLUMN_PASSWORD,
@@ -120,7 +122,7 @@ public class UserDatabaseHelper extends BaseDatabaseHelper {
         try {
             String selectQuery = "SELECT * FROM " + TABLE_USERS;
 
-            SQLiteDatabase db = this.getReadableDatabase();
+            SQLiteDatabase db = dbHelper.getReadableDb();
             Cursor cursor = db.rawQuery(selectQuery, null);
 
             if (cursor.moveToFirst()) {
@@ -149,7 +151,7 @@ public class UserDatabaseHelper extends BaseDatabaseHelper {
     // Update User
     public int updateUser(User user) {
         try {
-            SQLiteDatabase db = this.getWritableDatabase();
+            SQLiteDatabase db = dbHelper.getWritableDb();
             ContentValues values = new ContentValues();
 
             values.put(COLUMN_NAME, user.getName());
@@ -175,7 +177,7 @@ public class UserDatabaseHelper extends BaseDatabaseHelper {
     // Delete User
     public void deleteUser(String userId) {
         try {
-            SQLiteDatabase db = this.getWritableDatabase();
+            SQLiteDatabase db = dbHelper.getWritableDb();
             db.delete(TABLE_USERS, COLUMN_ID + "=?", new String[]{userId});
             db.close();
         } catch (Exception e) {
