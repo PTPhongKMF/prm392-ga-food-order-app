@@ -7,7 +7,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.foodorderapp.MainActivity;
+import com.example.foodorderapp.Activity.MainActivity;
 import com.example.foodorderapp.database.DatabaseHelper;
 import com.example.foodorderapp.databinding.ActivityLoginBinding;
 import com.example.foodorderapp.model.User;

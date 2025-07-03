@@ -1,26 +1,42 @@
-package com.example.foodorderapp;
+package com.example.foodorderapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.foodorderapp.R;
 import com.example.foodorderapp.UserService.LoginActivity;
 import com.example.foodorderapp.UserService.UserProfileActivity;
+import com.example.foodorderapp.adapter.CategoryAdapter;
+import com.example.foodorderapp.database.DatabaseHelper;
+import com.example.foodorderapp.model.Category;
 import com.example.foodorderapp.utils.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private ImageButton btnUserMenu;
     private BottomNavigationView bottomNavigationView;
     private SessionManager sessionManager;
+
+    RecyclerView recyclerView;
+    ProgressBar progressBar;
+    CategoryAdapter adapter;
+    ArrayList<Category> categoryList;
+    DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +59,30 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         // Set up user menu click listener
         btnUserMenu.setOnClickListener(v -> showUserMenu());
+
+        recyclerView = findViewById(R.id.recyclerView);
+        progressBar = findViewById(R.id.progressBarCategory);
+
+        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        dbHelper = new DatabaseHelper(this);
+        loadCategories();
+
+    }
+
+    private void loadCategories() {
+        // Show progress bar
+        progressBar.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+
+
+            categoryList = dbHelper.getAllCategories();
+
+            adapter = new CategoryAdapter(categoryList);
+            recyclerView.setAdapter(adapter);
+
+            progressBar.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+
     }
 
     //User Menu options
