@@ -1,6 +1,7 @@
 package com.example.foodorderapp.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.foodorderapp.Activity.DetailActivity;
 import com.example.foodorderapp.R;
 import com.example.foodorderapp.model.Foods;
 
@@ -39,6 +41,11 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewho
         String imgName = items.get(position).getImagePath();
         int imgResourceId = context.getResources().getIdentifier(imgName, "drawable", holder.itemView.getContext().getPackageName());
         holder.pic.setImageResource(imgResourceId);
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DetailActivity.class);
+            intent.putExtra("object", items.get(position));
+            context.startActivity(intent);
+        });
 
     }
 
