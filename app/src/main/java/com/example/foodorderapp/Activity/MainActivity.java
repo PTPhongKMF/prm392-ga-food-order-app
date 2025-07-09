@@ -29,6 +29,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private ImageButton btnUserMenu;
+    private ImageButton btnChatList;
     private BottomNavigationView bottomNavigationView;
     private SessionManager sessionManager;
 
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // Initialize views
         btnUserMenu = findViewById(R.id.btn_user_menu);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        btnChatList = findViewById(R.id.btn_chat_list);
 
         // Set up bottom navigation
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
@@ -61,6 +63,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         btnUserMenu.setOnClickListener(v -> {
             Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
             showUserMenu();
+        });
+
+        btnChatList.setOnClickListener(v ->{
+
         });
 
         // Make sure button is clickable and visible
