@@ -25,44 +25,12 @@ import java.util.List;
 public class DatabaseHelper extends BaseDatabaseHelper {
     private static final String TAG = "DatabaseHelper";
     private static final String DATABASE_NAME = "FoodOrderApp.db";
-    private static final int DATABASE_VERSION = 4;
-    private final Context context;  // 👈 Thêm dòng này
+    private static final int DATABASE_VERSION = 5;
+    private final Context context;
     private final UserDatabaseHelper userHelper;
     private final CategoryDatabaseHelper categoryHelper;
     private final FoodDatabaseHelper foodHelper;
-
-    // Table Users
-    private static final String TABLE_USERS = "users";
-    private static final String COLUMN_ID = "id";
-    private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_EMAIL = "email";
-    private static final String COLUMN_PASSWORD = "password";
-    private static final String COLUMN_ROLE = "role";
-    private static final String COLUMN_PHONE = "phone";
-    private static final String COLUMN_ADDRESS = "address";
-    private static final String COLUMN_AVATAR_URL = "avatar_url";
-    private static final String COLUMN_CREATED_AT = "created_at";
-
-    // Category Table
-    private static final String TABLE_CATEGORY = "category";
-    private static final String CATEGORY_ID = "id";
-    private static final String CATEGORY_IMAGE_PATH = "image_path";
-    private static final String CATEGORY_NAME = "name";
-
-    // Product Table
-    private static final String TABLE_PRODUCT = "product";
-    private static final String PRODUCT_ID = "id";
-    private static final String PRODUCT_CATEGORY_ID = "category_id";
-    private static final String PRODUCT_BEST_FOOD = "best_food";
-    private static final String PRODUCT_TITLE = "title";
-    private static final String PRODUCT_DESCRIPTION = "description";
-    private static final String PRODUCT_IMAGE_PATH = "image_path";
-    private static final String PRODUCT_LOCATION_ID = "location_id";
-    private static final String PRODUCT_PRICE = "price";
-    private static final String PRODUCT_PRICE_ID = "price_id";
-    private static final String PRODUCT_STAR = "star";
-    private static final String PRODUCT_TIME_ID = "time_id";
-    private static final String PRODUCT_TIME_VALUE = "time_value";
+    private final CartDatabaseHelper cartHelper;
 
     public DatabaseHelper(@Nullable Context context) {
         super(context);
@@ -70,6 +38,7 @@ public class DatabaseHelper extends BaseDatabaseHelper {
         userHelper = new UserDatabaseHelper(context);
         categoryHelper = new CategoryDatabaseHelper(context);
         foodHelper = new FoodDatabaseHelper(context);
+        cartHelper = new CartDatabaseHelper(context);
     }
 
     @Override
@@ -77,11 +46,13 @@ public class DatabaseHelper extends BaseDatabaseHelper {
         userHelper.createTables(db);
         categoryHelper.createTables(db);
         foodHelper.createTables(db);
+        cartHelper.createTables(db);
     }
 
     @Override
     protected void dropTables(SQLiteDatabase db) {
-        foodHelper.dropTables(db);  // Drop in reverse order due to foreign key constraints
+        cartHelper.dropTables(db);  // Drop in reverse order due to foreign key constraints
+        foodHelper.dropTables(db);
         categoryHelper.dropTables(db);
         userHelper.dropTables(db);
     }
@@ -171,5 +142,10 @@ public class DatabaseHelper extends BaseDatabaseHelper {
 
     public void deleteUser(String userId) {
         userHelper.deleteUser(userId);
+    }
+
+    // Cart operations
+    public int getCartItemQuantity(int userId) {
+        return cartHelper.getCartItemQuantity(userId);
     }
 } 
