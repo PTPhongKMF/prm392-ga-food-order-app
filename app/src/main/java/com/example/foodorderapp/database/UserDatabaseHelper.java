@@ -18,16 +18,16 @@ public class UserDatabaseHelper {
     private static final String TAG = "UserDatabaseHelper";
 
     // Table Users
-    private static final String TABLE_USERS = "users";
-    private static final String COLUMN_ID = "id";
-    private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_EMAIL = "email";
-    private static final String COLUMN_PASSWORD = "password";
-    private static final String COLUMN_ROLE = "role";
-    private static final String COLUMN_PHONE = "phone";
-    private static final String COLUMN_ADDRESS = "address";
-    private static final String COLUMN_AVATAR_URL = "avatar_url";
-    private static final String COLUMN_CREATED_AT = "created_at";
+    public static final String TABLE_USERS = "users";
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_EMAIL = "email";
+    public static final String COLUMN_PASSWORD = "password";
+    public static final String COLUMN_ROLE = "role";
+    public static final String COLUMN_PHONE = "phone";
+    public static final String COLUMN_ADDRESS = "address";
+    public static final String COLUMN_AVATAR_URL = "avatar_url";
+    public static final String COLUMN_CREATED_AT = "created_at";
 
     private final Context context;
     private final DatabaseHelper dbHelper;
@@ -51,6 +51,39 @@ public class UserDatabaseHelper {
                 + ")";
         db.execSQL(CREATE_USERS_TABLE);
         Log.d(TAG, "Created users table: " + CREATE_USERS_TABLE);
+        
+        // Initialize mock users right after table creation
+        initializeData(db);
+    }
+
+    protected void initializeData(SQLiteDatabase db) {
+        // Create mock customer
+        ContentValues customerValues = new ContentValues();
+        customerValues.put(COLUMN_NAME, "Customer User");
+        customerValues.put(COLUMN_EMAIL, "c@c.com");
+        customerValues.put(COLUMN_PASSWORD, "c");
+        customerValues.put(COLUMN_ROLE, UserRole.CUSTOMER.toString());
+        customerValues.put(COLUMN_PHONE, "1234567890");
+        customerValues.put(COLUMN_ADDRESS, "123 Customer St");
+        customerValues.put(COLUMN_CREATED_AT, System.currentTimeMillis() + "");
+        
+        // Create mock staff
+        ContentValues staffValues = new ContentValues();
+        staffValues.put(COLUMN_NAME, "Staff User");
+        staffValues.put(COLUMN_EMAIL, "s@s.com");
+        staffValues.put(COLUMN_PASSWORD, "s");
+        staffValues.put(COLUMN_ROLE, UserRole.STAFF.toString());
+        staffValues.put(COLUMN_PHONE, "0987654321");
+        staffValues.put(COLUMN_ADDRESS, "456 Staff St");
+        staffValues.put(COLUMN_CREATED_AT, System.currentTimeMillis() + "");
+
+        try {
+            db.insert(TABLE_USERS, null, customerValues);
+            db.insert(TABLE_USERS, null, staffValues);
+            Log.d(TAG, "Mock users created successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating mock users: " + e.getMessage());
+        }
     }
 
     protected void dropTables(SQLiteDatabase db) {

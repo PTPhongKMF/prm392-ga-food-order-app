@@ -25,12 +25,12 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
     private static final String DATABASE_NAME = "FoodOrderApp.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     private final Context context;
     private final UserDatabaseHelper userHelper;
     private final CategoryDatabaseHelper categoryHelper;
     private final FoodDatabaseHelper foodHelper;
-    private final CartDatabaseHelper cartHelper;
+    public final CartDatabaseHelper cartHelper;
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
