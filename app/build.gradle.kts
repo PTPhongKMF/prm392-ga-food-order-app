@@ -62,6 +62,13 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata:2.7.0")
     implementation(libs.recyclerview)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.auth)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(libs.firebase.firestore)
+    implementation("com.firebaseui:firebase-ui-firestore:8.0.0")
+    implementation ("com.google.android.gms:play-services-auth:21.0.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

@@ -1,17 +1,14 @@
 package com.example.foodorderapp.Activity;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -20,95 +17,79 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodorderapp.R;
 import com.example.foodorderapp.adapter.MessageAdapter;
+import com.example.foodorderapp.model.ChatRoom;
 import com.example.foodorderapp.model.Message;
-import com.example.foodorderapp.utils.SessionManager;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.example.foodorderapp.model.User;
+import com.example.foodorderapp.utils.AndroidUtil;
+import com.example.foodorderapp.utils.FirebaseUtil;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Query;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.Arrays;
 
 public class ChatDetailActivity extends AppCompatActivity {
 
-    String receiverId, receiverName, receiverRoom;
-    String senderId, senderName, senderRoom;
+    User user;
+    private String chatRoomId;
+    private ChatRoom chatroomModel;
 
-    DatabaseReference dbReferenceSender, dbReferenceReceiver;
+    private DatabaseReference dbReference;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     ImageView btnSendChat;
     EditText etMessage;
     RecyclerView chatDetailList;
     MessageAdapter messageAdapter;
-    Toolbar toolbar;
-
-    private String currentUserId;
+    ImageView backBtnChatDetail;
+    TextView user_name_chat_detail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_chat_detail);
+        setAdjustScreen();
 
-        toolbar = findViewById(R.id.chatToolbar);
-        setSupportActionBar(toolbar);
-
-        currentUserId = SessionManager.getInstance(this).getUser().getId();
-
-        receiverId = getIntent().getStringExtra("id");
-        receiverName = getIntent().getStringExtra("name");
-
-        if(receiverId != null){
-
-        }
+        user = AndroidUtil.getUserModelFromIntent(getIntent());
+        chatRoomId = FirebaseUtil.getChatRoomId(mAuth.getUid(), user.getId());
 
         btnSendChat = findViewById(R.id.btnSendChat);
         etMessage = findViewById(R.id.etMessage);
-        messageAdapter = new MessageAdapter(this);
         chatDetailList = findViewById(R.id.chatDetailList);
+        user_name_chat_detail = findViewById(R.id.user_name_chat_detail);
+        backBtnChatDetail = findViewById(R.id.backBtnChatDetail);
 
-        chatDetailList.setAdapter(messageAdapter);
-        chatDetailList.setLayoutManager(new LinearLayoutManager(this));
 
-        dbReferenceSender = FirebaseDatabase.getInstance().getReference("chats").child(senderRoom);
-        dbReferenceReceiver =
-                FirebaseDatabase.getInstance().getReference("chats").child(receiverRoom);
+        //set text hien thi ten nguoi nhan tin nhan
+        user_name_chat_detail.setText(user.getName());
 
-        dbReferenceSender.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                List<Message> messageList = new ArrayList<>();
-                for(DataSnapshot dataSnapshot: snapshot.getChildren()){
-                    Message message = dataSnapshot.getValue(Message.class);
-                    messageList.add(message);
-                }
-                messageAdapter.clear();
-                for(Message message : messageList){
-                    messageAdapter.add(message);
-                }
-                messageAdapter.notifyDataSetChanged();
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+        //quay lai
+        backBtnChatDetail.setOnClickListener(v -> {
+            getOnBackPressedDispatcher().onBackPressed();
         });
 
         btnSendChat.setOnClickListener(v -> {
             String message = etMessage.getText().toString();
-            if(message.trim().length() > 0){
-                sendMessage(message);
+            if (message.isEmpty()) {
+                return;
             }
-            else{
-                Toast.makeText(this, "Message can't be empty!", Toast.LENGTH_LONG).show();
-            }
+            sendMessageToUser(message);
         });
+
+
+        //get ra hoac tao moi mot room chat neu chua co
+        getOrCreateChatRoomModel();
+
+        //setup hien thi len recycle view data tu firebase
+        setUpChatDetailList();
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -117,41 +98,73 @@ public class ChatDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void sendMessage(String messageInput){
-        String messageId = UUID.randomUUID().toString();
-        Message message = new Message(messageId, currentUserId, messageInput);
-
-        messageAdapter.add(message);
-        dbReferenceSender.child(messageId).setValue(message)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(ChatDetailActivity.this, "Cannot send message, please try " +
-                                "again!", Toast.LENGTH_SHORT).show();
-                    }
-                })
-        ;
-
-        dbReferenceReceiver.child(messageId).setValue(message);
-        chatDetailList.scrollToPosition(messageAdapter.getItemCount() - 1);
-        etMessage.setText("");
+    private void setAdjustScreen() {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.user_menu, menu);
-        return true;
+    private void setUpChatDetailList() {
+        Query query = FirebaseUtil.getChatRoomMessageReference(chatRoomId).orderBy("timestamp", Query.Direction.ASCENDING);
+        FirestoreRecyclerOptions<Message> options =
+                new FirestoreRecyclerOptions.Builder<Message>().setQuery(query, Message.class).build();
+
+        messageAdapter = new MessageAdapter(options,getApplicationContext());
+
+        //tin nhan se bi nguoc nen phai reverse lai
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+//        manager.setReverseLayout(true);
+        chatDetailList.setLayoutManager(manager);
+        chatDetailList.setAdapter(messageAdapter);
+
+        //listen change va cap nhat vao adapter
+        messageAdapter.startListening();
+
+        //tu dong keo xuong khi co tin nhan moi
+        messageAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                chatDetailList.smoothScrollToPosition(0);
+            }
+        });
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        if(item.getItemId() == R.id.)
-//        return super.onOptionsItemSelected(item);
-//    }
+    private void sendMessageToUser(String messageInput) {
+
+        chatroomModel.setLastMessageTimestamp(Timestamp.now());
+        chatroomModel.setLastMessageSenderId(mAuth.getUid());
+        chatroomModel.setLastMessage(messageInput);
+        FirebaseUtil.getChatRoomReference(chatRoomId).set(chatroomModel);
+
+        Message message = new Message(mAuth.getUid(), messageInput, Timestamp.now());
+
+        FirebaseUtil.getChatRoomMessageReference(chatRoomId).add(message).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentReference> task) {
+                if(task.isSuccessful()){
+                    etMessage.setText("");
+                }
+            }
+        });
+
+    }
+
+
+    private void getOrCreateChatRoomModel() {
+        FirebaseUtil.getChatRoomReference(chatRoomId).get().addOnCompleteListener(task ->{
+            if(task.isSuccessful()) {
+                chatroomModel = task.getResult().toObject(ChatRoom.class);
+                if(chatroomModel == null){
+                    //first time
+                    chatroomModel = new ChatRoom(chatRoomId,
+                                                Arrays.asList(mAuth.getUid(),
+                                                user.getId()),
+                                                Timestamp.now(),
+                              "");
+                    FirebaseUtil.getChatRoomReference(chatRoomId).set(chatroomModel);
+                }
+            }
+        });
+    }
+
 }

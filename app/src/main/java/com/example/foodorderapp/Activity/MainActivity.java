@@ -21,17 +21,23 @@ import com.example.foodorderapp.UserService.UserProfileActivity;
 import com.example.foodorderapp.adapter.CategoryAdapter;
 import com.example.foodorderapp.database.DatabaseHelper;
 import com.example.foodorderapp.model.Category;
+import com.example.foodorderapp.model.User;
+import com.example.foodorderapp.utils.AndroidUtil;
 import com.example.foodorderapp.utils.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     private ImageButton btnUserMenu;
-    private ImageButton btnChatList;
     private BottomNavigationView bottomNavigationView;
     private SessionManager sessionManager;
+    DatabaseReference databaseReference;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     RecyclerView recyclerView;
     ProgressBar progressBar;
@@ -54,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         // Initialize views
         btnUserMenu = findViewById(R.id.btn_user_menu);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-        btnChatList = findViewById(R.id.btn_chat_list);
 
         // Set up bottom navigation
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
@@ -63,10 +68,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         btnUserMenu.setOnClickListener(v -> {
             Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
             showUserMenu();
-        });
-
-        btnChatList.setOnClickListener(v ->{
-
         });
 
         // Make sure button is clickable and visible
@@ -154,6 +155,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     private void logout() {
         sessionManager.logout();
+        //dang xuat tai khoan firebase
+        mAuth.signOut();
         Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
         // Restart activity to refresh state
         Intent intent = new Intent(this, MainActivity.class);
@@ -185,6 +188,39 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return false;
             }
             Toast.makeText(this, "Giỏ hàng", Toast.LENGTH_SHORT).show();
+            return true;
+        } else if (itemId == R.id.navigation_chat){
+            if (!isUserLoggedIn()) {
+                new androidx.appcompat.app.AlertDialog.Builder(this)
+                    .setTitle("Đăng nhập")
+                    .setMessage("Bạn cần đăng nhập để sử dụng chat")
+                    .setPositiveButton("Đăng nhập", (dialog, which) -> {
+                        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(loginIntent);
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
+                return false;
+            }
+
+            String uid = mAuth.getUid();
+            databaseReference = FirebaseDatabase.getInstance().getReference("users").child(uid);
+
+            databaseReference.child("role").get().addOnSuccessListener(dataSnapshot -> {
+                if(dataSnapshot.exists()){
+                    String role = dataSnapshot.getValue(String.class);
+                    if(role.equalsIgnoreCase("CUSTOMER")){
+                        User user = new User("hlX4nY01RNOqv9pwZqanLe0axkE2", "Staff 2",
+                                "05558886663");
+                        Intent intent = new Intent(this, ChatDetailActivity.class);
+                        AndroidUtil.passUserModelAsIntent(intent, user);
+                        startActivity(intent);
+                        //startActivity(new Intent(this, ChatListStaffActivity.class));
+                    } else if(role.equalsIgnoreCase("STAFF")){
+                        startActivity(new Intent(this, ChatListStaffActivity.class));
+                    }
+                }
+            });
             return true;
         }
         return false;
