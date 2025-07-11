@@ -12,11 +12,17 @@ import com.example.foodorderapp.database.DatabaseHelper;
 import com.example.foodorderapp.databinding.ActivityLoginBinding;
 import com.example.foodorderapp.model.User;
 import com.example.foodorderapp.utils.SessionManager;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
     private DatabaseHelper dbHelper;
     private SessionManager sessionManager;
+    private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +37,17 @@ public class LoginActivity extends AppCompatActivity {
         // Check if user is already logged in
         if (sessionManager.isLoggedIn()) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+        }
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("users");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+            startActivity(new Intent(this, MainActivity.class));
             finish();
         }
     }
@@ -55,13 +72,23 @@ public class LoginActivity extends AppCompatActivity {
         
         User user = dbHelper.getUserByEmail(email);
         if (user != null && password.equals(user.getPassword())) {
+
             // Save user session
             sessionManager.saveUser(user);
-            
-            // Login successful
-            Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            finish();
+
+            //login with firebase to get importance info later
+            FirebaseAuth.getInstance()
+                    .signInWithEmailAndPassword(email.trim(), password)
+                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                        @Override
+                        public void onSuccess(AuthResult authResult) {
+                            // Login successful
+                            Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            finish();
+                        }
+                    });
+
         } else {
             binding.loginButton.setEnabled(true);
             Toast.makeText(LoginActivity.this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show();

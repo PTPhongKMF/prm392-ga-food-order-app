@@ -22,10 +22,10 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DatabaseHelper extends BaseDatabaseHelper {
+public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
     private static final String DATABASE_NAME = "FoodOrderApp.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 4;
     private final Context context;
     private final UserDatabaseHelper userHelper;
     private final CategoryDatabaseHelper categoryHelper;
@@ -33,15 +33,26 @@ public class DatabaseHelper extends BaseDatabaseHelper {
     private final CartDatabaseHelper cartHelper;
 
     public DatabaseHelper(@Nullable Context context) {
-        super(context);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.context = context;
-        userHelper = new UserDatabaseHelper(context);
-        categoryHelper = new CategoryDatabaseHelper(context);
-        foodHelper = new FoodDatabaseHelper(context);
+        userHelper = new UserDatabaseHelper(context, this);
+        categoryHelper = new CategoryDatabaseHelper(context, this);
+        foodHelper = new FoodDatabaseHelper(context, this);
         cartHelper = new CartDatabaseHelper(context);
     }
 
     @Override
+    public void onCreate(SQLiteDatabase db) {
+        createTables(db);
+        initializeData(db);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        dropTables(db);
+        onCreate(db);
+    }
+
     protected void createTables(SQLiteDatabase db) {
         userHelper.createTables(db);
         categoryHelper.createTables(db);
@@ -49,7 +60,6 @@ public class DatabaseHelper extends BaseDatabaseHelper {
         cartHelper.createTables(db);
     }
 
-    @Override
     protected void dropTables(SQLiteDatabase db) {
         cartHelper.dropTables(db);  // Drop in reverse order due to foreign key constraints
         foodHelper.dropTables(db);
@@ -57,13 +67,12 @@ public class DatabaseHelper extends BaseDatabaseHelper {
         userHelper.dropTables(db);
     }
 
-    @Override
     protected void initializeData(SQLiteDatabase db) {
         categoryHelper.initializeData(db);
         foodHelper.initializeData(db);
     }
 
-    private void executeSqlFromAsset(SQLiteDatabase db, Context context, String fileName) {
+    protected void executeSqlFromAsset(SQLiteDatabase db, String fileName) {
         try {
             InputStream input = context.getAssets().open(fileName);
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -144,8 +153,17 @@ public class DatabaseHelper extends BaseDatabaseHelper {
         userHelper.deleteUser(userId);
     }
 
+    // Getter for database
+    public SQLiteDatabase getWritableDb() {
+        return this.getWritableDatabase();
+    }
+
+    public SQLiteDatabase getReadableDb() {
+        return this.getReadableDatabase();
+    }
+
     // Cart operations
     public int getCartItemQuantity(int userId) {
         return cartHelper.getCartItemQuantity(userId);
     }
-} 
+}

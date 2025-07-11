@@ -11,7 +11,7 @@ import com.example.foodorderapp.model.Foods;
 
 import java.util.ArrayList;
 
-public class FoodDatabaseHelper extends BaseDatabaseHelper {
+public class FoodDatabaseHelper {
     private static final String TAG = "FoodDatabaseHelper";
 
     // Product Table
@@ -29,11 +29,14 @@ public class FoodDatabaseHelper extends BaseDatabaseHelper {
     private static final String PRODUCT_TIME_ID = "time_id";
     private static final String PRODUCT_TIME_VALUE = "time_value";
 
-    public FoodDatabaseHelper(@Nullable Context context) {
-        super(context);
+    private final Context context;
+    private final DatabaseHelper dbHelper;
+
+    public FoodDatabaseHelper(@Nullable Context context, DatabaseHelper dbHelper) {
+        this.context = context;
+        this.dbHelper = dbHelper;
     }
 
-    @Override
     protected void createTables(SQLiteDatabase db) {
         String CREATE_PRODUCT_TABLE = "CREATE TABLE " + TABLE_PRODUCT + "("
                 + PRODUCT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -53,19 +56,17 @@ public class FoodDatabaseHelper extends BaseDatabaseHelper {
         db.execSQL(CREATE_PRODUCT_TABLE);
     }
 
-    @Override
     protected void dropTables(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCT);
     }
 
-    @Override
     protected void initializeData(SQLiteDatabase db) {
-        executeSqlFromAsset(db, "init_products.sql");
+        dbHelper.executeSqlFromAsset(db, "init_products.sql");
     }
 
     public ArrayList<Foods> getFoodsByCategoryId(int categoryId) {
         ArrayList<Foods> list = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = dbHelper.getReadableDb();
 
         String query = "SELECT " + PRODUCT_ID + ", " + PRODUCT_CATEGORY_ID + ", " + PRODUCT_TITLE + ", " 
                 + PRODUCT_DESCRIPTION + ", " + PRODUCT_IMAGE_PATH + ", " + PRODUCT_LOCATION_ID + ", " 
@@ -102,7 +103,7 @@ public class FoodDatabaseHelper extends BaseDatabaseHelper {
 
     public ArrayList<Foods> getAllFoods() {
         ArrayList<Foods> list = new ArrayList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase db = dbHelper.getReadableDb();
 
         String query = "SELECT " + PRODUCT_ID + ", " + PRODUCT_CATEGORY_ID + ", " + PRODUCT_TITLE + ", " 
                 + PRODUCT_DESCRIPTION + ", " + PRODUCT_IMAGE_PATH + ", " + PRODUCT_LOCATION_ID + ", " 

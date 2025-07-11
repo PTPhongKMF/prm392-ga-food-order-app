@@ -3,14 +3,25 @@ package com.example.foodorderapp.UserService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.foodorderapp.Activity.MainActivity;
 import com.example.foodorderapp.database.DatabaseHelper;
 import com.example.foodorderapp.databinding.ActivitySignupBinding;
 import com.example.foodorderapp.model.User;
 import com.example.foodorderapp.model.UserRole;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +30,10 @@ import java.util.Locale;
 public class SignupActivity extends AppCompatActivity {
     private ActivitySignupBinding binding;
     private DatabaseHelper dbHelper;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
+    private  FirebaseAuth mAuth;
+    private static String TAG = "SignUpActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +43,19 @@ public class SignupActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
         setupClickListeners();
+
+        mAuth = FirebaseAuth.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("users");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(FirebaseAuth.getInstance().getCurrentUser() != null){
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
     }
 
     private void setupClickListeners() {
@@ -71,13 +99,40 @@ public class SignupActivity extends AppCompatActivity {
         binding.signupButton.setEnabled(true);
 
         if (userId != -1) {
-            Toast.makeText(SignupActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(SignupActivity.this, LoginActivity.class));
-            finish();
+            createFirebaseUser(email, password, newUser);
         } else {
             Toast.makeText(SignupActivity.this, "Registration failed", Toast.LENGTH_SHORT).show();
         }
     }
+
+    //them user vao firebase de thuan tien cho chat sau nay
+    private void createFirebaseUser(String email, String password, User user) {
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    Log.d(TAG, "CreateUserWithEmail: Success");
+                    FirebaseUser firebaseUser = mAuth.getCurrentUser();
+                    UserProfileChangeRequest userProfileChangeRequest =
+                            new UserProfileChangeRequest.Builder().setDisplayName(user.getName()).build();
+
+                    user.setId(mAuth.getUid());
+                    databaseReference.child(mAuth.getUid()).setValue(user);
+                    firebaseUser.updateProfile(userProfileChangeRequest);
+
+                    mAuth.signOut();
+
+                    Toast.makeText(SignupActivity.this, "Registration successful!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+                    finish();
+                }else{
+                    Log.w(TAG, "create: failure", task.getException());
+                    Toast.makeText(SignupActivity.this, "Create Fail", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
 
     private boolean validateForm(String name, String email, String password, String phone, String address) {
         boolean valid = true;
@@ -119,4 +174,4 @@ public class SignupActivity extends AppCompatActivity {
 
         return valid;
     }
-} 
+}

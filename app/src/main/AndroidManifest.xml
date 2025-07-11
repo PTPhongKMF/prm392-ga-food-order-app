@@ -15,11 +15,22 @@
         android:theme="@style/Theme.FoodOrderApp"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.ChatListStaffActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ChatDetailActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|adjustResize"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.DetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.ListFoodActivity"
             android:exported="false" />
         <activity
             android:name=".UserService.LoginActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
         <activity
             android:name=".UserService.SignupActivity"
             android:exported="false" />
