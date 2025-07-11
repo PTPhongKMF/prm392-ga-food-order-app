@@ -15,19 +15,19 @@ public class FoodDatabaseHelper {
     private static final String TAG = "FoodDatabaseHelper";
 
     // Product Table
-    private static final String TABLE_PRODUCT = "product";
-    private static final String PRODUCT_ID = "id";
-    private static final String PRODUCT_CATEGORY_ID = "category_id";
-    private static final String PRODUCT_BEST_FOOD = "best_food";
-    private static final String PRODUCT_TITLE = "title";
-    private static final String PRODUCT_DESCRIPTION = "description";
-    private static final String PRODUCT_IMAGE_PATH = "image_path";
-    private static final String PRODUCT_LOCATION_ID = "location_id";
-    private static final String PRODUCT_PRICE = "price";
-    private static final String PRODUCT_PRICE_ID = "price_id";
-    private static final String PRODUCT_STAR = "star";
-    private static final String PRODUCT_TIME_ID = "time_id";
-    private static final String PRODUCT_TIME_VALUE = "time_value";
+    public static final String TABLE_PRODUCT = "product";
+    public static final String PRODUCT_ID = "id";
+    public static final String PRODUCT_CATEGORY_ID = "category_id";
+    public static final String PRODUCT_BEST_FOOD = "best_food";
+    public static final String PRODUCT_TITLE = "title";
+    public static final String PRODUCT_DESCRIPTION = "description";
+    public static final String PRODUCT_IMAGE_PATH = "image_path";
+    public static final String PRODUCT_LOCATION_ID = "location_id";
+    public static final String PRODUCT_PRICE = "price";
+    public static final String PRODUCT_PRICE_ID = "price_id";
+    public static final String PRODUCT_STAR = "star";
+    public static final String PRODUCT_TIME_ID = "time_id";
+    public static final String PRODUCT_TIME_VALUE = "time_value";
 
     private final Context context;
     private final DatabaseHelper dbHelper;

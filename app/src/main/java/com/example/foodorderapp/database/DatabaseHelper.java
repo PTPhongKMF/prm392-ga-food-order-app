@@ -38,7 +38,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         userHelper = new UserDatabaseHelper(context, this);
         categoryHelper = new CategoryDatabaseHelper(context, this);
         foodHelper = new FoodDatabaseHelper(context, this);
-        cartHelper = new CartDatabaseHelper(context);
+        cartHelper = new CartDatabaseHelper(context, this);
     }
 
     @Override
@@ -160,10 +160,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public SQLiteDatabase getReadableDb() {
         return this.getReadableDatabase();
-    }
-
-    // Cart operations
-    public int getCartItemQuantity(int userId) {
-        return cartHelper.getCartItemQuantity(userId);
     }
 }
