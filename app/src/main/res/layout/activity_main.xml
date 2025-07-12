@@ -34,12 +34,26 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-
             </RelativeLayout>
 
         </androidx.appcompat.widget.Toolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <ImageButton
+        android:id="@+id/btn_user_menu"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:contentDescription="User menu"
+        android:elevation="4dp"
+        android:focusable="true"
+        android:padding="8dp"
+        android:src="@drawable/ic_person" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -99,21 +113,6 @@
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-    <ImageButton
-        android:id="@+id/btn_user_menu"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="16dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:contentDescription="User menu"
-        android:elevation="2dp"
-        android:focusable="true"
-        android:padding="8dp"
-        android:src="@drawable/ic_person" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
