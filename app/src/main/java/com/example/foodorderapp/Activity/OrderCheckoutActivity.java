@@ -35,6 +35,15 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.example.foodorderapp.utils.FirebaseUtil;
+import com.example.foodorderapp.model.OrderStatus;
+import com.example.foodorderapp.model.PaymentStatus;
+import java.text.SimpleDateFormat;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class OrderCheckoutActivity extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;

@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodorderapp.R;
+import com.example.foodorderapp.Activity.OrderHistoryActivity;
 import com.example.foodorderapp.UserService.LoginActivity;
 import com.example.foodorderapp.UserService.UserProfileActivity;
 import com.example.foodorderapp.adapter.CategoryAdapter;
@@ -124,18 +125,28 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             popup.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
-                if (itemId == R.id.action_profile) {
-                    startActivity(new Intent(this, UserProfileActivity.class));
-                    return true;
-                } else if (itemId == R.id.action_orders) {
-                    Toast.makeText(this, "Đơn hàng của tôi", Toast.LENGTH_SHORT).show();
-                    return true;
-                } else if (itemId == R.id.action_settings) {
-                    Toast.makeText(this, "Cài đặt", Toast.LENGTH_SHORT).show();
-                    return true;
-                } else if (itemId == R.id.action_logout) {
-                    logout();
-                    return true;
+                try {
+                    if (itemId == R.id.action_profile) {
+                        startActivity(new Intent(this, UserProfileActivity.class));
+                        return true;
+                    } else if (itemId == R.id.action_orders) {
+                        if (!isUserLoggedIn()) {
+                            Toast.makeText(this, "Vui lòng đăng nhập để xem đơn hàng", Toast.LENGTH_SHORT).show();
+                            return true;
+                        }
+                        Intent intent = new Intent(this, OrderHistoryActivity.class);
+                        startActivity(intent);
+                        return true;
+                    } else if (itemId == R.id.action_settings) {
+                        Toast.makeText(this, "Cài đặt", Toast.LENGTH_SHORT).show();
+                        return true;
+                    } else if (itemId == R.id.action_logout) {
+                        logout();
+                        return true;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Toast.makeText(this, "Có lỗi xảy ra: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 return false;
             });
@@ -226,5 +237,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_orders) {
+            startActivity(new Intent(this, OrderHistoryActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

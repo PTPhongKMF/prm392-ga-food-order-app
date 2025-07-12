@@ -2,13 +2,9 @@ package com.example.foodorderapp.model;
 
 public enum OrderStatus {
     PENDING,
+    CONFIRMED,
     PREPARING,
-    SHIPPING,
+    DELIVERING,
     COMPLETED,
-    CANCELLED;
-
-    @Override
-    public String toString() {
-        return name();
-    }
+    CANCELLED
 } 

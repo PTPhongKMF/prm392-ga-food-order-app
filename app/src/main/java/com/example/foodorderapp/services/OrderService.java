@@ -107,6 +107,15 @@ public class OrderService {
         return dbHelper.orderHelper.getOrdersByUserId(Integer.parseInt(sessionManager.getUser().getId()));
     }
 
+    public double getCartTotal() {
+        List<CartItem> cartItems = cartService.getAllCartItems();
+        double total = 0;
+        for (CartItem item : cartItems) {
+            total += item.getProductQuantity() * Double.parseDouble(item.getProductPrice());
+        }
+        return total;
+    }
+
     private boolean isStaff() {
         return sessionManager.isLoggedIn() && 
                sessionManager.getUser().getRole() == UserRole.STAFF;
