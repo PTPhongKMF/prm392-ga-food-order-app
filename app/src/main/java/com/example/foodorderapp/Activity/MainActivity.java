@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private BottomNavigationView bottomNavigationView;
     private SessionManager sessionManager;
     DatabaseReference databaseReference;
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private CartService cartService;
 
     private FirebaseAuth mAuth;
