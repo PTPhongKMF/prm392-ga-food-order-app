@@ -61,6 +61,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel:2.7.0")
     implementation("androidx.lifecycle:lifecycle-livedata:2.7.0")
     implementation(libs.recyclerview)
+    
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
+    implementation("com.google.firebase:firebase-auth")
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
     implementation(libs.credentials)
