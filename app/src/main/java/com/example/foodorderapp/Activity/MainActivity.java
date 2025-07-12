@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.foodorderapp.R;
 import com.example.foodorderapp.UserService.LoginActivity;
 import com.example.foodorderapp.UserService.UserProfileActivity;
+import com.example.foodorderapp.Activity.RestaurantInfoActivity;
 import com.example.foodorderapp.adapter.CategoryAdapter;
 import com.example.foodorderapp.database.DatabaseHelper;
 import com.example.foodorderapp.model.Category;
@@ -25,6 +26,7 @@ import com.example.foodorderapp.model.User;
 import com.example.foodorderapp.utils.AndroidUtil;
 import com.example.foodorderapp.utils.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private BottomNavigationView bottomNavigationView;
     private SessionManager sessionManager;
     DatabaseReference databaseReference;
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseAuth mAuth;
 
     RecyclerView recyclerView;
     ProgressBar progressBar;
@@ -49,6 +51,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize Firebase
+        try {
+            mAuth = FirebaseAuth.getInstance();
+        } catch (Exception e) {
+            // Nếu Firebase chưa được khởi tạo, thử khởi tạo lại
+            FirebaseApp.initializeApp(this);
+            mAuth = FirebaseAuth.getInstance();
+        }
 
         // Initialize SessionManager
         sessionManager = SessionManager.getInstance(this);
@@ -127,6 +138,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     return true;
                 } else if (itemId == R.id.action_settings) {
                     Toast.makeText(this, "Cài đặt", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else if (itemId == R.id.action_restaurant_info) {
+                    startActivity(new Intent(this, RestaurantInfoActivity.class));
                     return true;
                 } else if (itemId == R.id.action_logout) {
                     logout();
