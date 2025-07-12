@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class FirebaseUtil {
+    private static FirebaseFirestore firestore;
 
     public static String currentUserId(){
         return FirebaseAuth.getInstance().getUid();
@@ -54,5 +55,20 @@ public class FirebaseUtil {
 
     public static String timestampToString(Timestamp timestamp){
         return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(timestamp.toDate());
+    }
+
+    // Add new method for Firestore instance
+    public static FirebaseFirestore getFirestore() {
+        try {
+            if (firestore == null) {
+                firestore = FirebaseFirestore.getInstance();
+                System.out.println("Debug - Firestore initialized successfully");
+            }
+            return firestore;
+        } catch (Exception e) {
+            System.out.println("Debug - Error initializing Firestore: " + e.getMessage());
+            e.printStackTrace();
+            return FirebaseFirestore.getInstance(); // Try to get a new instance
+        }
     }
 }

@@ -111,6 +111,10 @@ public class Order implements Serializable {
         return totalAmount;
     }
 
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
     private void calculateTotalAmount() {
         this.totalAmount = 0;
         for (OrderDetail detail : orderDetails) {

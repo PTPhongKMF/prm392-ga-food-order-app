@@ -46,6 +46,9 @@
             android:name=".Activity.ListFoodActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.OrderHistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".UserService.LoginActivity"
             android:exported="true" />
         <activity
