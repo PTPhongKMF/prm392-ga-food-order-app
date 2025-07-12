@@ -99,9 +99,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     //User Menu options
     private void showUserMenu() {
-        // Debug Toast
-        Toast.makeText(this, "Showing menu", Toast.LENGTH_SHORT).show();
-
         if (!isUserLoggedIn()) {
             // Show login dialog
             new androidx.appcompat.app.AlertDialog.Builder(this)
@@ -149,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private boolean isUserLoggedIn() {
         boolean logged = sessionManager.isLoggedIn();
         // Debug Toast
-        Toast.makeText(this, "User logged in: " + logged, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "User logged in: " + logged, Toast.LENGTH_SHORT).show();
         return logged;
     }
 
