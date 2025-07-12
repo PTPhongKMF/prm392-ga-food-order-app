@@ -2,11 +2,13 @@ package com.example.foodorderapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -22,6 +24,7 @@ import com.example.foodorderapp.adapter.CategoryAdapter;
 import com.example.foodorderapp.database.DatabaseHelper;
 import com.example.foodorderapp.model.Category;
 import com.example.foodorderapp.model.User;
+import com.example.foodorderapp.services.CartService;
 import com.example.foodorderapp.utils.AndroidUtil;
 import com.example.foodorderapp.utils.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private SessionManager sessionManager;
     DatabaseReference databaseReference;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private CartService cartService;
 
     RecyclerView recyclerView;
     ProgressBar progressBar;
@@ -50,8 +54,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize SessionManager
+        // Initialize SessionManager and CartService
         sessionManager = SessionManager.getInstance(this);
+        cartService = new CartService(this);
 
         // Initialize Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -187,7 +192,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     .show();
                 return false;
             }
-            Toast.makeText(this, "Giỏ hàng", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(MainActivity.this, CartListActivity.class));
             return true;
         } else if (itemId == R.id.navigation_chat){
             if (!isUserLoggedIn()) {

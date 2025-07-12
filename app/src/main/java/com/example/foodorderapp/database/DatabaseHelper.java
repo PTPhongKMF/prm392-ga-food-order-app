@@ -25,12 +25,13 @@ import java.util.List;
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatabaseHelper";
     private static final String DATABASE_NAME = "FoodOrderApp.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
     private final Context context;
     private final UserDatabaseHelper userHelper;
     private final CategoryDatabaseHelper categoryHelper;
     private final FoodDatabaseHelper foodHelper;
     public final CartDatabaseHelper cartHelper;
+    public final OrderDatabaseHelper orderHelper;
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -39,6 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         categoryHelper = new CategoryDatabaseHelper(context, this);
         foodHelper = new FoodDatabaseHelper(context, this);
         cartHelper = new CartDatabaseHelper(context, this);
+        orderHelper = new OrderDatabaseHelper(context, this);
     }
 
     @Override
@@ -58,10 +60,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         categoryHelper.createTables(db);
         foodHelper.createTables(db);
         cartHelper.createTables(db);
+        orderHelper.createTables(db);
     }
 
     protected void dropTables(SQLiteDatabase db) {
-        cartHelper.dropTables(db);  // Drop in reverse order due to foreign key constraints
+        orderHelper.dropTables(db);  // Drop in reverse order due to foreign key constraints
+        cartHelper.dropTables(db);
         foodHelper.dropTables(db);
         categoryHelper.dropTables(db);
         userHelper.dropTables(db);

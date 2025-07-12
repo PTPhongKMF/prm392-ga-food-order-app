@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -15,13 +17,19 @@
         android:theme="@style/Theme.FoodOrderApp"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.OrderCheckoutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.CartListActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.ChatListStaffActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.ChatDetailActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan|adjustResize"
-            android:exported="false" />
+            android:windowSoftInputMode="adjustPan|adjustResize" />
         <activity
             android:name=".Activity.DetailActivity"
             android:exported="false" />

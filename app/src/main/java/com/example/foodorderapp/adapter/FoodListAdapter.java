@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,12 +15,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.foodorderapp.Activity.DetailActivity;
 import com.example.foodorderapp.R;
 import com.example.foodorderapp.model.Foods;
+import com.example.foodorderapp.services.CartService;
 
 import java.util.ArrayList;
 
 public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewholder> {
     ArrayList<Foods> items;
     Context context;
+    private CartService cartService;
 
     public FoodListAdapter(ArrayList<Foods> items) {
         this.items = items;
@@ -29,24 +32,35 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewho
     @Override
     public FoodListAdapter.viewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
+        cartService = new CartService(context);
         return new viewholder(LayoutInflater.from(context).inflate(R.layout.viewholder_list_food,parent, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull FoodListAdapter.viewholder holder, int position) {
         holder.titleTxt.setText(items.get(position).getTitle());
-        holder.timeTxt.setText(items.get(position).getTimeValue()+" min");
+        holder.timeTxt.setText(items.get(position).getTimeValue()+" phút");
         holder.priceTxt.setText("$" + items.get(position).getPrice());
         holder.rateTxt.setText("" + items.get(position).getStar());
         String imgName = items.get(position).getImagePath();
         int imgResourceId = context.getResources().getIdentifier(imgName, "drawable", holder.itemView.getContext().getPackageName());
         holder.pic.setImageResource(imgResourceId);
+        
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);
             intent.putExtra("object", items.get(position));
             context.startActivity(intent);
         });
 
+        holder.addToCartBtn.setOnClickListener(v -> {
+            Foods food = items.get(position);
+            long result = cartService.addToCart(food.getId(), 1);
+            if (result > 0) {
+                Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Không thể thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -55,7 +69,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewho
     }
 
     public class viewholder extends RecyclerView.ViewHolder{
-        TextView titleTxt, priceTxt, rateTxt, timeTxt;
+        TextView titleTxt, priceTxt, rateTxt, timeTxt, addToCartBtn;
         ImageView pic;
         public viewholder(@NonNull View itemView) {
             super(itemView);
@@ -64,8 +78,7 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewho
             rateTxt = itemView.findViewById(R.id.ratingTxt);
             timeTxt = itemView.findViewById(R.id.timeTxt);
             pic = itemView.findViewById(R.id.img);
-
-
+            addToCartBtn = itemView.findViewById(R.id.addToCartBtn);
         }
     }
 }
