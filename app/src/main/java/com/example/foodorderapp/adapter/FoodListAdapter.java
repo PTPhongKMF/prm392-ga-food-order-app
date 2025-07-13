@@ -16,6 +16,10 @@ import com.example.foodorderapp.Activity.DetailActivity;
 import com.example.foodorderapp.R;
 import com.example.foodorderapp.model.Foods;
 import com.example.foodorderapp.services.CartService;
+import com.example.foodorderapp.utils.ImageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import java.io.File;
 
 import java.util.ArrayList;
 
@@ -43,8 +47,23 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewho
         holder.priceTxt.setText("$" + items.get(position).getPrice());
         holder.rateTxt.setText("" + items.get(position).getStar());
         String imgName = items.get(position).getImagePath();
-        int imgResourceId = context.getResources().getIdentifier(imgName, "drawable", holder.itemView.getContext().getPackageName());
-        holder.pic.setImageResource(imgResourceId);
+        // Sửa logic hiển thị ảnh
+        if (imgName == null || imgName.isEmpty()) {
+            holder.pic.setImageResource(R.drawable.pizza_1);
+        } else {
+            int resourceId = ImageManager.getImageResource(imgName);
+            if (resourceId != R.drawable.pizza_1 || imgName.equals("pizza_1")) {
+                holder.pic.setImageResource(resourceId);
+            } else {
+                File imageFile = ImageManager.getImageFile(context, imgName);
+                if (imageFile.exists()) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+                    holder.pic.setImageBitmap(bitmap);
+                } else {
+                    holder.pic.setImageResource(R.drawable.pizza_1);
+                }
+            }
+        }
         
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, DetailActivity.class);

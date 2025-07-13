@@ -13,6 +13,10 @@ import com.example.foodorderapp.R;
 import com.example.foodorderapp.databinding.ActivityDetailBinding;
 import com.example.foodorderapp.model.Foods;
 import com.example.foodorderapp.services.CartService;
+import com.example.foodorderapp.utils.ImageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import java.io.File;
 
 public class DetailActivity extends AppCompatActivity {
     ActivityDetailBinding binding;
@@ -47,8 +51,23 @@ public class DetailActivity extends AppCompatActivity {
         binding.ratingBar.setRating((float)object.getStar());
         binding.totalTxt.setText("$" + (num * object.getPrice()));
         String imgName = object.getImagePath();
-        int imgResourceId = getResources().getIdentifier(imgName, "drawable", getPackageName());
-        binding.pic.setImageResource(imgResourceId);
+        // Sửa logic hiển thị ảnh
+        if (imgName == null || imgName.isEmpty()) {
+            binding.pic.setImageResource(R.drawable.pizza_1);
+        } else {
+            int resourceId = ImageManager.getImageResource(imgName);
+            if (resourceId != R.drawable.pizza_1 || imgName.equals("pizza_1")) {
+                binding.pic.setImageResource(resourceId);
+            } else {
+                File imageFile = ImageManager.getImageFile(this, imgName);
+                if (imageFile.exists()) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath());
+                    binding.pic.setImageBitmap(bitmap);
+                } else {
+                    binding.pic.setImageResource(R.drawable.pizza_1);
+                }
+            }
+        }
         
         binding.plusBtn.setOnClickListener(v -> {
                 num += 1;

@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import com.example.foodorderapp.model.Foods;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class FoodDatabaseHelper {
     private static final String TAG = "FoodDatabaseHelper";
@@ -31,6 +32,11 @@ public class FoodDatabaseHelper {
 
     private final Context context;
     private final DatabaseHelper dbHelper;
+
+    public FoodDatabaseHelper(@Nullable Context context) {
+        this.context = context;
+        this.dbHelper = new DatabaseHelper(context);
+    }
 
     public FoodDatabaseHelper(@Nullable Context context, DatabaseHelper dbHelper) {
         this.context = context;
@@ -135,5 +141,118 @@ public class FoodDatabaseHelper {
         cursor.close();
         db.close();
         return list;
+    }
+
+    public List<Foods> getFoodsByCategory(int categoryId) {
+        return getFoodsByCategoryId(categoryId);
+    }
+
+    public boolean addFood(Foods food) {
+        SQLiteDatabase db = dbHelper.getWritableDb();
+        try {
+            String query = "INSERT INTO " + TABLE_PRODUCT + " (" +
+                    PRODUCT_CATEGORY_ID + ", " + PRODUCT_TITLE + ", " + PRODUCT_DESCRIPTION + ", " +
+                    PRODUCT_IMAGE_PATH + ", " + PRODUCT_LOCATION_ID + ", " + PRODUCT_PRICE + ", " +
+                    PRODUCT_PRICE_ID + ", " + PRODUCT_STAR + ", " + PRODUCT_TIME_ID + ", " +
+                    PRODUCT_TIME_VALUE + ", " + PRODUCT_BEST_FOOD + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            
+            db.execSQL(query, new Object[]{
+                    food.getCategoryId(),
+                    food.getTitle(),
+                    food.getDescription(),
+                    food.getImagePath(),
+                    food.getLocationId(),
+                    food.getPrice(),
+                    1, // price_id default
+                    food.getStar(),
+                    food.getTimeId(),
+                    String.valueOf(food.getTimeValue()),
+                    food.isBestFood() ? 1 : 0
+            });
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error adding food: " + e.getMessage());
+            return false;
+        } finally {
+            db.close();
+        }
+    }
+
+    public boolean updateFood(Foods food) {
+        SQLiteDatabase db = dbHelper.getWritableDb();
+        try {
+            String query = "UPDATE " + TABLE_PRODUCT + " SET " +
+                    PRODUCT_CATEGORY_ID + " = ?, " + PRODUCT_TITLE + " = ?, " + PRODUCT_DESCRIPTION + " = ?, " +
+                    PRODUCT_IMAGE_PATH + " = ?, " + PRODUCT_LOCATION_ID + " = ?, " + PRODUCT_PRICE + " = ?, " +
+                    PRODUCT_STAR + " = ?, " + PRODUCT_TIME_ID + " = ?, " + PRODUCT_TIME_VALUE + " = ?, " +
+                    PRODUCT_BEST_FOOD + " = ? WHERE " + PRODUCT_ID + " = ?";
+            
+            db.execSQL(query, new Object[]{
+                    food.getCategoryId(),
+                    food.getTitle(),
+                    food.getDescription(),
+                    food.getImagePath(),
+                    food.getLocationId(),
+                    food.getPrice(),
+                    food.getStar(),
+                    food.getTimeId(),
+                    String.valueOf(food.getTimeValue()),
+                    food.isBestFood() ? 1 : 0,
+                    food.getId()
+            });
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error updating food: " + e.getMessage());
+            return false;
+        } finally {
+            db.close();
+        }
+    }
+
+    public boolean deleteFood(int foodId) {
+        SQLiteDatabase db = dbHelper.getWritableDb();
+        try {
+            String query = "DELETE FROM " + TABLE_PRODUCT + " WHERE " + PRODUCT_ID + " = ?";
+            db.execSQL(query, new Object[]{foodId});
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Error deleting food: " + e.getMessage());
+            return false;
+        } finally {
+            db.close();
+        }
+    }
+
+    public Foods getFoodById(int foodId) {
+        SQLiteDatabase db = dbHelper.getReadableDb();
+        Foods food = null;
+
+        String query = "SELECT " + PRODUCT_ID + ", " + PRODUCT_CATEGORY_ID + ", " + PRODUCT_TITLE + ", " 
+                + PRODUCT_DESCRIPTION + ", " + PRODUCT_IMAGE_PATH + ", " + PRODUCT_LOCATION_ID + ", " 
+                + PRODUCT_PRICE + ", " + PRODUCT_PRICE_ID + ", " + PRODUCT_STAR + ", " + PRODUCT_TIME_ID + ", " 
+                + PRODUCT_TIME_VALUE + ", " + PRODUCT_BEST_FOOD 
+                + " FROM " + TABLE_PRODUCT 
+                + " WHERE " + PRODUCT_ID + " = ?";
+        
+        Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(foodId)});
+
+        if (cursor.moveToFirst()) {
+            food = new Foods();
+            food.setId(cursor.getInt(0));
+            food.setCategoryId(cursor.getInt(1));
+            food.setTitle(cursor.getString(2));
+            food.setDescription(cursor.getString(3));
+            food.setImagePath(cursor.getString(4));
+            food.setLocationId(cursor.getInt(5));
+            food.setPrice(cursor.getDouble(6));
+            food.setStar(cursor.getDouble(8));
+            food.setTimeId(cursor.getInt(9));
+            food.setTimeValue(Integer.parseInt(cursor.getString(10)));
+            food.setBestFood(cursor.getInt(11) == 1);
+        }
+
+        cursor.close();
+        db.close();
+        return food;
     }
 } 

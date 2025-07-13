@@ -60,4 +60,35 @@ public class SessionManager {
         editor.clear();
         editor.commit();
     }
+    
+    // Getter methods for user information
+    public String getUserId() {
+        User user = getUser();
+        return user != null ? user.getId() : null;
+    }
+    
+    public String getUserName() {
+        User user = getUser();
+        return user != null ? user.getName() : null;
+    }
+    
+    public String getUserEmail() {
+        User user = getUser();
+        return user != null ? user.getEmail() : null;
+    }
+    
+    public String getUserPhone() {
+        User user = getUser();
+        return user != null ? user.getPhone() : null;
+    }
+    
+    public String getUserAddress() {
+        User user = getUser();
+        return user != null ? user.getAddress() : null;
+    }
+    
+    public UserRole getUserRole() {
+        User user = getUser();
+        return user != null ? user.getRole() : null;
+    }
 } 

@@ -63,6 +63,10 @@
             android:name=".Activity.RestaurantInfoActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.ProductManagementActivity"
+            android:exported="false"
+            android:label="Quản lý sản phẩm" />
+        <activity
             android:name=".Activity.MainActivity"
             android:exported="true">
             <intent-filter>
