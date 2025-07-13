@@ -94,11 +94,23 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Lỗi đăng nhập Firebase: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         });
             } else {
-                // For staff users, redirect to product management
-                Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(LoginActivity.this, com.example.foodorderapp.Activity.ProductManagementActivity.class);
-                startActivity(intent);
-                finish();
+                //login with firebase to get importance info later
+                FirebaseAuth.getInstance()
+                        .signInWithEmailAndPassword(email.trim(), password)
+                        .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                            @Override
+                            public void onSuccess(AuthResult authResult) {
+                                // For staff users, redirect to product management
+                                Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(LoginActivity.this, com.example.foodorderapp.Activity.ProductManagementActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            binding.loginButton.setEnabled(true);
+                            Toast.makeText(LoginActivity.this, "Lỗi đăng nhập Firebase: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
             }
         } else {
             binding.loginButton.setEnabled(true);

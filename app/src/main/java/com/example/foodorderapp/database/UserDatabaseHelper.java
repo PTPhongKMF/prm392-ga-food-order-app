@@ -61,7 +61,7 @@ public class UserDatabaseHelper {
         ContentValues customerValues = new ContentValues();
         customerValues.put(COLUMN_NAME, "Customer User");
         customerValues.put(COLUMN_EMAIL, "c@c.com");
-        customerValues.put(COLUMN_PASSWORD, "c");
+        customerValues.put(COLUMN_PASSWORD, "cccccc");
         customerValues.put(COLUMN_ROLE, UserRole.CUSTOMER.toString());
         customerValues.put(COLUMN_PHONE, "1234567890");
         customerValues.put(COLUMN_ADDRESS, "123 Customer St");
@@ -71,7 +71,7 @@ public class UserDatabaseHelper {
         ContentValues staffValues = new ContentValues();
         staffValues.put(COLUMN_NAME, "Staff User");
         staffValues.put(COLUMN_EMAIL, "s@s.com");
-        staffValues.put(COLUMN_PASSWORD, "s");
+        staffValues.put(COLUMN_PASSWORD, "ssssss");
         staffValues.put(COLUMN_ROLE, UserRole.STAFF.toString());
         staffValues.put(COLUMN_PHONE, "0987654321");
         staffValues.put(COLUMN_ADDRESS, "456 Staff St");

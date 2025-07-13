@@ -31,16 +31,20 @@ import com.example.foodorderapp.database.DatabaseHelper;
 import com.example.foodorderapp.database.FoodDatabaseHelper;
 import com.example.foodorderapp.model.Category;
 import com.example.foodorderapp.model.Foods;
+import com.example.foodorderapp.model.User;
+import com.example.foodorderapp.utils.AndroidUtil;
 import com.example.foodorderapp.utils.ImageManager;
 import com.example.foodorderapp.utils.SessionManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.io.File;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +56,8 @@ public class ProductManagementActivity extends AppCompatActivity implements Prod
     private ImageButton btnBack, btnAddProduct;
     private BottomNavigationView bottomNavigation;
     private SessionManager sessionManager;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    DatabaseReference databaseReference;
     
     private List<Category> categories;
     private CategoryDatabaseHelper categoryDatabaseHelper;
@@ -136,9 +142,24 @@ public class ProductManagementActivity extends AppCompatActivity implements Prod
                 // Already on products page, do nothing
                 return true;
             } else if (itemId == R.id.nav_chat) {
-                // Navigate to chat
-                Intent intent = new Intent(this, ChatListStaffActivity.class);
-                startActivity(intent);
+                String uid = mAuth.getUid();
+                databaseReference = FirebaseDatabase.getInstance().getReference("users").child(uid);
+
+                databaseReference.child("role").get().addOnSuccessListener(dataSnapshot -> {
+                    if(dataSnapshot.exists()){
+                        String role = dataSnapshot.getValue(String.class);
+                        if(role.equalsIgnoreCase("CUSTOMER")){
+                            User user = new User("4slWZhgseactoRylXmNtQtAYqmG2", "Staff",
+                                    "0182736252");
+                            Intent intent = new Intent(this, ChatDetailActivity.class);
+                            AndroidUtil.passUserModelAsIntent(intent, user);
+                            startActivity(intent);
+                            //startActivity(new Intent(this, ChatListStaffActivity.class));
+                        } else if(role.equalsIgnoreCase("STAFF")){
+                            startActivity(new Intent(this, ChatListStaffActivity.class));
+                        }
+                    }
+                });
                 return true;
             } else if (itemId == R.id.nav_orders) {
                 // Navigate to order management
@@ -169,6 +190,8 @@ public class ProductManagementActivity extends AppCompatActivity implements Prod
     private void logout() {
         // Clear session
         sessionManager.logout();
+
+        mAuth.signOut();
         
         // Navigate to login
         Intent intent = new Intent(this, com.example.foodorderapp.UserService.LoginActivity.class);

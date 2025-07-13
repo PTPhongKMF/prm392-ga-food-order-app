@@ -2,13 +2,11 @@ package com.example.foodorderapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,10 +18,8 @@ import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 
 import com.example.foodorderapp.R;
-import com.example.foodorderapp.Activity.OrderHistoryActivity;
 import com.example.foodorderapp.UserService.LoginActivity;
 import com.example.foodorderapp.UserService.UserProfileActivity;
-import com.example.foodorderapp.Activity.RestaurantInfoActivity;
 import com.example.foodorderapp.adapter.CategoryAdapter;
 import com.example.foodorderapp.adapter.SliderAdapter;
 import com.example.foodorderapp.database.DatabaseHelper;
@@ -268,8 +264,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 if(dataSnapshot.exists()){
                     String role = dataSnapshot.getValue(String.class);
                     if(role.equalsIgnoreCase("CUSTOMER")){
-                        User user = new User("hlX4nY01RNOqv9pwZqanLe0axkE2", "Staff 2",
-                                "05558886663");
+                        User user = new User("4slWZhgseactoRylXmNtQtAYqmG2", "Staff",
+                                "0182736252");
                         Intent intent = new Intent(this, ChatDetailActivity.class);
                         AndroidUtil.passUserModelAsIntent(intent, user);
                         startActivity(intent);
