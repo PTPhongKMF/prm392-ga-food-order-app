@@ -49,6 +49,8 @@
             android:name=".Activity.OrderHistoryActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.OrderManagementActivity" />
+        <activity
             android:name=".UserService.LoginActivity"
             android:exported="true" />
         <activity

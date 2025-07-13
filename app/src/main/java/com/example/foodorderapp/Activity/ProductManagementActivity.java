@@ -140,6 +140,11 @@ public class ProductManagementActivity extends AppCompatActivity implements Prod
                 Intent intent = new Intent(this, ChatListStaffActivity.class);
                 startActivity(intent);
                 return true;
+            } else if (itemId == R.id.nav_orders) {
+                // Navigate to order management
+                Intent intent = new Intent(this, OrderManagementActivity.class);
+                startActivity(intent);
+                return true;
             } else if (itemId == R.id.nav_logout) {
                 // Show logout confirmation
                 showLogoutConfirmation();

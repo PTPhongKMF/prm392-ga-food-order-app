@@ -107,6 +107,13 @@ public class OrderService {
         return dbHelper.orderHelper.getOrdersByUserId(Integer.parseInt(sessionManager.getUser().getId()));
     }
 
+    public List<Order> getAllOrders() {
+        if (!isStaff()) {
+            return new ArrayList<>();
+        }
+        return dbHelper.orderHelper.getAllOrders();
+    }
+
     public double getCartTotal() {
         List<CartItem> cartItems = cartService.getAllCartItems();
         double total = 0;

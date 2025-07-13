@@ -15,5 +15,10 @@
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_person"
         android:title="Đăng xuất" />
+    
+    <item
+        android:id="@+id/nav_orders"
+        android:icon="@drawable/ic_cart"
+        android:title="Đơn hàng" />
         
 </menu> 

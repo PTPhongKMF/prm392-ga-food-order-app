@@ -163,6 +163,25 @@ public class OrderDatabaseHelper {
         return orders;
     }
 
+    public List<Order> getAllOrders() {
+        List<Order> orders = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDb();
+        String query = "SELECT o.*, u." + UserDatabaseHelper.COLUMN_NAME + " as user_name "
+                + "FROM " + TABLE_ORDER + " o "
+                + "LEFT JOIN " + UserDatabaseHelper.TABLE_USERS + " u ON o." + ORDER_USER_ID + " = u." + UserDatabaseHelper.COLUMN_ID
+                + " ORDER BY o." + ORDER_CREATED_AT + " DESC";
+        Cursor cursor = db.rawQuery(query, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                Order order = extractOrderFromCursor(cursor);
+                order.setOrderDetails(getOrderDetails(order.getId()));
+                orders.add(order);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return orders;
+    }
+
     private List<OrderDetail> getOrderDetails(int orderId) {
         List<OrderDetail> details = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDb();
