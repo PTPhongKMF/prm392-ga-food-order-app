@@ -17,6 +17,8 @@ import com.example.foodorderapp.utils.ImageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import java.io.File;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class DetailActivity extends AppCompatActivity {
     ActivityDetailBinding binding;
@@ -43,13 +45,21 @@ public class DetailActivity extends AppCompatActivity {
                 finish();
             }
         });
-        
-        binding.priceTxt.setText("$" + object.getPrice());
+
+        NumberFormat vnFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
+        vnFormat.setMaximumFractionDigits(0); // Không hiển thị phần thập phân
+
+        String formattedPrice = vnFormat.format(object.getPrice()) + " đ";
+        binding.priceTxt.setText(formattedPrice);
         binding.titleTxt.setText(object.getTitle());
+        binding.timeTxt.setText(object.getTimeValue() + " phút");
         binding.descriptionTxt.setText(object.getDescription());
         binding.ratingTxt.setText(object.getStar() + " Sao");
         binding.ratingBar.setRating((float)object.getStar());
-        binding.totalTxt.setText("$" + (num * object.getPrice()));
+
+        double total = num * object.getPrice();
+        String formattedTotal = vnFormat.format(total) + " đ";
+        binding.totalTxt.setText(formattedTotal);
         String imgName = object.getImagePath();
         // Sửa logic hiển thị ảnh
         if (imgName == null || imgName.isEmpty()) {
@@ -72,14 +82,15 @@ public class DetailActivity extends AppCompatActivity {
         binding.plusBtn.setOnClickListener(v -> {
                 num += 1;
                 binding.numTxt.setText(num + "");
-                binding.totalTxt.setText("$" + (num * object.getPrice()));
+
+            binding.totalTxt.setText(vnFormat.format(num * object.getPrice()) + " đ");
         });
 
         binding.minusBtn.setOnClickListener(v -> {
             if(num > 0) {
                 num -= 1;
                 binding.numTxt.setText(num + "");
-                binding.totalTxt.setText("$" + (num * object.getPrice()));
+                binding.totalTxt.setText(vnFormat.format(num * object.getPrice()) + " đ");
             }
         });
 

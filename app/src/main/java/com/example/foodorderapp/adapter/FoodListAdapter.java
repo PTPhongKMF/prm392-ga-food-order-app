@@ -21,7 +21,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import java.io.File;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewholder> {
     ArrayList<Foods> items;
@@ -44,7 +46,10 @@ public class FoodListAdapter extends RecyclerView.Adapter<FoodListAdapter.viewho
     public void onBindViewHolder(@NonNull FoodListAdapter.viewholder holder, int position) {
         holder.titleTxt.setText(items.get(position).getTitle());
         holder.timeTxt.setText(items.get(position).getTimeValue()+" phút");
-        holder.priceTxt.setText("$" + items.get(position).getPrice());
+        NumberFormat vnFormat = NumberFormat.getInstance(new Locale("vi", "VN"));
+        vnFormat.setMaximumFractionDigits(0);
+        String priceFormatted = vnFormat.format(items.get(position).getPrice()) + " đ";
+        holder.priceTxt.setText(priceFormatted);
         holder.rateTxt.setText("" + items.get(position).getStar());
         String imgName = items.get(position).getImagePath();
         // Sửa logic hiển thị ảnh
