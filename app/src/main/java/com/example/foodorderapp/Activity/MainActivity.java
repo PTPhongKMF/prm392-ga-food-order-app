@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.CompositePageTransformer;
+import androidx.viewpager2.widget.MarginPageTransformer;
 
 import com.example.foodorderapp.R;
 import com.example.foodorderapp.Activity.OrderHistoryActivity;
@@ -23,8 +25,11 @@ import com.example.foodorderapp.UserService.LoginActivity;
 import com.example.foodorderapp.UserService.UserProfileActivity;
 import com.example.foodorderapp.Activity.RestaurantInfoActivity;
 import com.example.foodorderapp.adapter.CategoryAdapter;
+import com.example.foodorderapp.adapter.SliderAdapter;
 import com.example.foodorderapp.database.DatabaseHelper;
+import com.example.foodorderapp.databinding.ActivityMainBinding;
 import com.example.foodorderapp.model.Category;
+import com.example.foodorderapp.model.SliderItems;
 import com.example.foodorderapp.model.User;
 import com.example.foodorderapp.services.CartService;
 import com.example.foodorderapp.utils.AndroidUtil;
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private SessionManager sessionManager;
     DatabaseReference databaseReference;
     private CartService cartService;
+    private ActivityMainBinding binding;
 
     private FirebaseAuth mAuth;
 
@@ -57,7 +63,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+//        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
 
         try {
@@ -97,7 +106,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         dbHelper = new DatabaseHelper(this);
         loadCategories();
+
+        ArrayList<SliderItems> items = new ArrayList<>();
+        items.add(new SliderItems("banner1"));
+        items.add(new SliderItems("banner2"));
+        items.add(new SliderItems("banner3"));
+
+        banners(items);
     }
+
 
     private void loadCategories() {
         // Show progress bar
@@ -113,6 +130,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         recyclerView.setVisibility(View.VISIBLE);
     }
 
+    private void banners(ArrayList<SliderItems> items) {
+        binding.viewpager2.setAdapter(new SliderAdapter(items, binding.viewpager2));
+        binding.viewpager2.setClipChildren(false);
+        binding.viewpager2.setClipToPadding(false);
+        binding.viewpager2.setOffscreenPageLimit(3);
+        binding.viewpager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
+
+        CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
+        compositePageTransformer.addTransformer(new MarginPageTransformer(40));
+        binding.viewpager2.setPageTransformer(compositePageTransformer);
+        binding.progressBarBanner.setVisibility(View.GONE);
+
+
+    }
     //User Menu options
     private void showUserMenu() {
         if (!isUserLoggedIn()) {
