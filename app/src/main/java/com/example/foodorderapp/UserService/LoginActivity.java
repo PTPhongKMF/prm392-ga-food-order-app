@@ -17,6 +17,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.example.foodorderapp.model.UserRole;
 
 public class LoginActivity extends AppCompatActivity {
     private ActivityLoginBinding binding;
@@ -72,23 +73,32 @@ public class LoginActivity extends AppCompatActivity {
         
         User user = dbHelper.getUserByEmail(email);
         if (user != null && password.equals(user.getPassword())) {
-
             // Save user session
             sessionManager.saveUser(user);
 
-            //login with firebase to get importance info later
-            FirebaseAuth.getInstance()
-                    .signInWithEmailAndPassword(email.trim(), password)
-                    .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                        @Override
-                        public void onSuccess(AuthResult authResult) {
-                            // Login successful
-                            Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                            finish();
-                        }
-                    });
-
+            if (user.getRole() == UserRole.CUSTOMER) {
+                //login with firebase to get importance info later
+                FirebaseAuth.getInstance()
+                        .signInWithEmailAndPassword(email.trim(), password)
+                        .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                            @Override
+                            public void onSuccess(AuthResult authResult) {
+                                // Login successful
+                                Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                finish();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            binding.loginButton.setEnabled(true);
+                            Toast.makeText(LoginActivity.this, "Lỗi đăng nhập Firebase: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            } else {
+                // For staff users, just proceed with SQLite authentication
+                Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
+            }
         } else {
             binding.loginButton.setEnabled(true);
             Toast.makeText(LoginActivity.this, "Email hoặc mật khẩu không đúng", Toast.LENGTH_SHORT).show();
@@ -108,10 +118,6 @@ public class LoginActivity extends AppCompatActivity {
 
         if (TextUtils.isEmpty(password)) {
             binding.passwordEditText.setError("Bắt buộc");
-            valid = false;
-        }
-        else if (password.length() < 6) {
-            binding.passwordEditText.setError("Mật khẩu quá ngắn");
             valid = false;
         }
 
