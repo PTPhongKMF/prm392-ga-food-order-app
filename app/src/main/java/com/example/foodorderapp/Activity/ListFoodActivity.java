@@ -19,6 +19,10 @@ import com.example.foodorderapp.R;
 import com.example.foodorderapp.adapter.FoodListAdapter;
 import com.example.foodorderapp.database.DatabaseHelper;
 import com.example.foodorderapp.model.Foods;
+import com.example.foodorderapp.utils.ImageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import java.io.File;
 
 import java.util.ArrayList;
 

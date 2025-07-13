@@ -94,9 +94,10 @@ public class LoginActivity extends AppCompatActivity {
                             Toast.makeText(LoginActivity.this, "Lỗi đăng nhập Firebase: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         });
             } else {
-                // For staff users, just proceed with SQLite authentication
+                // For staff users, redirect to product management
                 Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                Intent intent = new Intent(LoginActivity.this, com.example.foodorderapp.Activity.ProductManagementActivity.class);
+                startActivity(intent);
                 finish();
             }
         } else {

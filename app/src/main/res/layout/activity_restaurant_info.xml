@@ -200,12 +200,13 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginEnd="12dp"
+                        <ImageButton
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/circular_bg"
+                            android:contentDescription="Time"
                             android:src="@drawable/ic_time"
-                            android:contentDescription="Time" />
+                            tools:ignore="TouchTargetSizeCheck" />
 
                         <LinearLayout
                             android:layout_width="0dp"

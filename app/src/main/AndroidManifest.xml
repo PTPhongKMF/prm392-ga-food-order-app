@@ -49,6 +49,8 @@
             android:name=".Activity.OrderHistoryActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.OrderManagementActivity" />
+        <activity
             android:name=".UserService.LoginActivity"
             android:exported="true" />
         <activity
@@ -62,6 +64,10 @@
         <activity
             android:name=".Activity.RestaurantInfoActivity"
             android:exported="false" />
+        <activity
+            android:name=".Activity.ProductManagementActivity"
+            android:exported="false"
+            android:label="Quản lý sản phẩm" />
         <activity
             android:name=".Activity.MainActivity"
             android:exported="true">

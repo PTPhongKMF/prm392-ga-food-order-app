@@ -178,6 +178,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                         Intent intent = new Intent(this, OrderHistoryActivity.class);
                         startActivity(intent);
                         return true;
+                    } else if (itemId == R.id.action_restaurant_info) {
+                        startActivity(new Intent(this, RestaurantInfoActivity.class));
+                        return true;
                     } else if (itemId == R.id.action_settings) {
                         Toast.makeText(this, "Cài đặt", Toast.LENGTH_SHORT).show();
                         return true;
@@ -228,7 +231,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         } else if (itemId == R.id.navigation_menu) {
             Toast.makeText(this, "Thực đơn", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (itemId == R.id.navigation_cart) {
+
+        }else if (itemId == R.id.navigation_cart) {
             if (!isUserLoggedIn()) {
                 new androidx.appcompat.app.AlertDialog.Builder(this)
                     .setTitle("Đăng nhập")
