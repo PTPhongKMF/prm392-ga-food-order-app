@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         MenuItem cartItem = menu.findItem(R.id.navigation_cart);
         int quantity = cartService.getTotalQuantity();
-        string quantityText = quantity > 99 ? "99+" : String.valueOf(quantity);
+        String quantityText = quantity > 99 ? "99+" : String.valueOf(quantity);
         cartItem.setTitle("Giỏ hàng (" + quantityText + ")");
 
         recyclerView = findViewById(R.id.recyclerView);
