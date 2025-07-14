@@ -2,6 +2,7 @@ package com.example.foodorderapp.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -64,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-
         try {
             mAuth = FirebaseAuth.getInstance();
         } catch (Exception e) {
@@ -95,6 +95,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         btnUserMenu.setClickable(true);
         btnUserMenu.setEnabled(true);
         btnUserMenu.setVisibility(View.VISIBLE);
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        Menu menu = bottomNavigationView.getMenu();
+
+        MenuItem cartItem = menu.findItem(R.id.navigation_cart);
+        int quantity = cartService.getTotalQuantity();
+        String quantityText = quantity > 99 ? "99+" : String.valueOf(quantity);
+        cartItem.setTitle("Giỏ hàng (" + quantityText + ")");
 
         recyclerView = findViewById(R.id.recyclerView);
         progressBar = findViewById(R.id.progressBarCategory);
