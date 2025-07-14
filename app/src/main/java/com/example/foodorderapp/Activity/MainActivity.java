@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         // Set up user menu click listener with debug Toast
         btnUserMenu.setOnClickListener(v -> {
-            Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this, "Button clicked", Toast.LENGTH_SHORT).show();
             showUserMenu();
         });
 
@@ -148,6 +148,33 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 
     }
+    
+    private void checkUserRoleAndSetupMenu(PopupMenu popup) {
+        String uid = mAuth.getUid();
+        if (uid != null) {
+            databaseReference = FirebaseDatabase.getInstance().getReference("users").child(uid);
+            databaseReference.child("role").get().addOnSuccessListener(dataSnapshot -> {
+                if (dataSnapshot.exists()) {
+                    String role = dataSnapshot.getValue(String.class);
+                    if (role == null || !role.equalsIgnoreCase("STAFF")) {
+                        // Hide management item for non-STAFF users
+                        popup.getMenu().findItem(R.id.action_management).setVisible(false);
+                    }
+                } else {
+                    // If role doesn't exist, hide management item
+                    popup.getMenu().findItem(R.id.action_management).setVisible(false);
+                }
+            }).addOnFailureListener(e -> {
+                // If there's an error checking role, hide management item for safety
+                popup.getMenu().findItem(R.id.action_management).setVisible(false);
+            });
+        } else {
+            // If no UID, hide management item
+            popup.getMenu().findItem(R.id.action_management).setVisible(false);
+        }
+    }
+    
+
     //User Menu options
     private void showUserMenu() {
         if (!isUserLoggedIn()) {
@@ -168,6 +195,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             PopupMenu popup = new PopupMenu(MainActivity.this, btnUserMenu);
             popup.getMenuInflater().inflate(R.menu.user_menu, popup.getMenu());
 
+            // Check user role and hide management item if not STAFF
+            checkUserRoleAndSetupMenu(popup);
+
             popup.setOnMenuItemClickListener(item -> {
                 int itemId = item.getItemId();
                 try {
@@ -180,6 +210,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                             return true;
                         }
                         Intent intent = new Intent(this, OrderHistoryActivity.class);
+                        startActivity(intent);
+                        return true;
+                    } else if (itemId == R.id.action_management) {
+                        // Navigate to ProductManagementActivity
+                        Intent intent = new Intent(this, ProductManagementActivity.class);
                         startActivity(intent);
                         return true;
                     } else if (itemId == R.id.action_restaurant_info) {
@@ -210,7 +245,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private boolean isUserLoggedIn() {
         boolean logged = sessionManager.isLoggedIn();
         // Debug Toast
-//        Toast.makeText(this, "User logged in: " + logged, Toast.LENGTH_SHORT).show();
         return logged;
     }
 
@@ -232,7 +266,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         if (itemId == R.id.navigation_home) {
             Toast.makeText(this, "Trang chủ", Toast.LENGTH_SHORT).show();
             return true;
-        } else if (itemId == R.id.navigation_menu) {
+        }
+        else if (itemId == R.id.navigation_menu) {
             Toast.makeText(this, "Thực đơn", Toast.LENGTH_SHORT).show();
             return true;
 
